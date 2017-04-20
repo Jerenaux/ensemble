@@ -26,10 +26,11 @@
   },
   "homepage": "https://github.com/Jerenaux/ensemble#readme",
   "dependencies": {
+    "body-parser": "^1.17.1",
     "connect-multiparty": "^2.0.0",
-    "nodemailer": "^4.0.1",
     "express": "^4.14.0",
     "mongodb": "^2.2.16",
+    "nodemailer": "^4.0.1",
     "socket.io": "^1.7.2"
   }
 }
