@@ -26,7 +26,7 @@ app.get('/',function(req,res){
 //mongoDBName = 'ensemble';
 
 server.listen(process.env.PORT || 8081,function(){
-    mongo.connect('mongodb://'+process.env.mongoHost+'/'+process.env.mongoDBName,function(err,db){
+    mongo.connect(process.env.MONGODB_URI,function(err,db){
         if(err) throw(err);
         server.db = db;
         console.log('Connection to db established');
