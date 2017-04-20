@@ -1,0 +1,15 @@
+<div><h3>Suggested features:</h3></div>
+
+<div ng-repeat="f in features | orderBy: '-(upvotes-downvotes)'" ng-class="{'row':true, 'feature':true, 'accepted':f.accepted}">
+    <div class="col-xs-1 feature_votes">
+        <div ng-click="upVote(f)" title="{{f.upvotes | filterVotes: 'up'}}" ng-class="{'feature_vote_icon':true, 'arrow_up':true, 'on':f.upvoted}"></div>
+        <div class="vote_score">{{f.upvotes - f.downvotes}}</div>
+        <div ng-click="downVote(f)" title="{{f.downvotes | filterVotes: 'down'}}" ng-class="{'feature_vote_icon':true, 'arrow_down':true, 'on':f.downvoted}"></div>
+    </div>
+    <div class="col-xs-11 feature_desc">
+        <div ng-class="{'panel':true, 'panel-default':true}">
+            <div ng-class="{'panel-heading':true}">{{f.username | formatName}}{{f.stamp | getDelay}} ago</div>
+            <div class="panel-body">{{f.desc}}</div>
+        </div>
+    </div>
+</div>

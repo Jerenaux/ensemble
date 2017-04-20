@@ -1,0 +1,29 @@
+<h3 class="suggesthead">Make an artistic submission!</h3>
+<span title="A what?" class="fhelp glyphicon glyphicon-question-sign" data-toggle="popover" data-trigger="hover"
+      data-content="Submit sprites or animations that you have made and would like to see featured in the game."></span>
+
+<form name="postForm" ng-submit="postArt()">
+    <div class="form-inline">
+        <label class="sr-only" for="nameInput">Name</label>
+        <input type="text" maxlength="30" class="form-control mb-2 mr-sm-2 mb-sm-0" id="nameInput" ng-model="username" placeholder="Username (optional)">
+        <label class="sr-only" for="mailInput">E-mail</label>
+        <input type="text" maxlength="60" class="form-control mb-2 mr-sm-2 mb-sm-0" id="mailInput" ng-model="email" placeholder="E-mail (optional)">
+    </div>
+
+    <div class="form-group featurebox">
+        <label class="sr-only" for="commInput">Comment</label>
+        <textarea maxlength="400" class="form-control" id="commInput" rows="3" ng-model="comment" placeholder="Provide optional comments about the submission and how you'd like to see it used."></textarea>
+    </div>
+
+    Select below the files to attach (if you wish to send multiple files, please bundle them in an archive)
+    <div class="form-group">
+        <input type="file" ngf-select ng-model="picFile" name="file" ngf-max-size="20MB" required ngf-model-invalid="errorFile">
+        <i ng-show="postForm.file.$error.maxSize">File too large {{errorFile.size / 1000000|number:1}}MB: max 20Mb</i>
+        <span ng-show="picFile.result">Upload Successful</span>
+        <span class="err" ng-show="errorMsg">{{errorMsg}}</span>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+    <span ng-show="sending" ng-class="{'alert':true, 'alert-info':true, 'confirmation':true}" ng-bind="sendingMsg"></span>
+    <span ng-show="submitted" ng-class="{'alert':true, 'alert-success':true, 'confirmation':true}" ng-bind="confirmationMsg"></span>
+    <span ng-show="showerror" ng-class="{'alert':true, 'alert-danger':true, 'confirmation':true}" ng-bind="errorMsg"></span>
+</form>

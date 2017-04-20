@@ -1,0 +1,96 @@
+canvas {
+    cursor: pointer;
+    border-radius: 10px;
+}
+
+.tabs {
+    margin-top: 10px;
+}
+
+.fhelp{
+    cursor: pointer;
+}
+
+.popover-title { display: none; }
+
+.title_wrapper{
+    border-bottom: 1px solid lightgray;
+    margin-bottom: 5px;
+    vertical-align: middle;
+}
+
+.container{
+    margin-bottom: 10px;
+}
+
+.title_wrapper h1{
+    display: inline-block;
+}
+
+.title_wrapper img{
+    margin-bottom: 15px;
+    cursor: pointer;
+}
+
+.featurebox{
+    margin-top: 5px;
+}
+
+.suggesthead{
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.feature{
+    margin-top: 25px;
+}
+
+.feature_votes {
+    color: rgba(0, 0, 0, 0.55);
+    text-align: center;
+}
+
+.accepted .panel-heading {
+    background: lightgreen;
+}
+
+.accepted .panel-body {
+    background: url('/images/accepted.png') no-repeat bottom right;
+    background-opacity: 0.5;
+}
+
+.vote_score {
+    font-size: 2.2em;
+    width: 35px;
+}
+
+.feature_vote_icon{
+    display: inline-block;
+    overflow: hidden;
+    width: 30px;
+    height: 15px;
+    cursor: pointer;
+    margin-left: 2px;
+    background: url('/images/arrows.png') no-repeat;
+}
+
+.accepted .feature_vote_icon {
+    display: none;
+}
+
+.arrow_up{
+    background-position: 0 0;
+}
+
+.arrow_down{
+    margin-top: 4px;
+    background-position: 0 -52px;
+}
+
+.on{
+    background-position-x: -40px;
+}
+
+.confirmation {
+    margin-left: 20px;
+}

@@ -1,0 +1,35 @@
+{
+  "name": "ensemble",
+  "version": "1.0.0",
+  "description": "A collaborative game development project",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jerenaux/ensemble.git"
+  },
+  "keywords": [
+    "Phaser",
+    "Socket.io",
+    "HTML5",
+    "Game",
+    "Multiplayer",
+    "Collaborative"
+  ],
+  "author": "Jerome Renaux",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Jerenaux/ensemble/issues"
+  },
+  "homepage": "https://github.com/Jerenaux/ensemble#readme",
+  "dependencies": {
+    "connect-multiparty": "^2.0.0",
+    "nodemailer": "^4.0.1",
+    "express": "^4.14.0",
+    "mongodb": "^2.2.16",
+    "socket.io": "^1.7.2"
+  }
+}

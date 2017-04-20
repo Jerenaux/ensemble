@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- Libraries -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/danialfarid-angular-file-upload/12.2.13/ng-file-upload.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.3.2/angular-ui-router.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="/game/lib/phaser.js"></script>
+    <!-- App -->
+    <script type="text/javascript" src="app/app.js"></script>
+    <script type="text/javascript" src="/ctrl/featuresctrl.js"></script>
+    <script type="text/javascript" src="/ctrl/newfeaturectrl.js"></script>
+    <script type="text/javascript" src="/ctrl/artctrl.js"></script>
+    <script type="text/javascript" src="/ctrl/prctrl.js"></script>
+    <!-- Game -->
+    <script type="text/javascript" src="/game/client/Player.js" ></script>
+    <script type="text/javascript" src="/game/client/game.js" ></script>
+    <script type="text/javascript" src="/game/client/client.js"></script>
+    <!-- CSS -->
+    <link href="/css/main.css" rel="stylesheet">
+    <title>Project Ensemble</title>
+</head>
+<body>
+<div class="container" ng-app="ensemble">
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <div class="title_wrapper">
+                <h1>Ensemble</h1>
+                <a href="#"><img title="What is Ensemble?"src="/images/help.png"/></a>
+            </div>
+            <div id='game'></div>
+            <ul class="nav nav-tabs tabs">
+                <li class="active"><a data-toggle="tab" href="#features">Features</a></li>
+                <li><a data-toggle="tab" href="#pr">Pull requests</a></li>
+                <li><a data-toggle="tab" href="#art">Submit art</a></li>
+                <li><a data-toggle="tab" href="#what">What's all this?!</a></li>
+            </ul>
+            <div class="tab-content">
+                <div id="features" class="tab-pane fade in active">
+                    <div ui-view="newfeature"></div>
+                    <div ui-view="features"></div>
+                </div>
+                <div id="pr" class="tab-pane fade">
+                    <div ui-view="pullrequests"></div>
+                </div>
+                <div id="art" class="tab-pane fade">
+                    <div ui-view="art"></div>
+                </div>
+                <div id="what" class="tab-pane fade">
+                    <div ui-view="what"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script src="/game/client/main.js" type="text/javascript"></script>
+<script>$(document).ready(function(){$('[data-toggle="popover"]').popover();});</script>
+</html>

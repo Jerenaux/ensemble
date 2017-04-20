@@ -1,0 +1,23 @@
+<h3 class="suggesthead">Suggest a feature!</h3>
+<span title="A what?" class="fhelp glyphicon glyphicon-question-sign" data-toggle="popover" data-trigger="hover"
+      data-content="Make a suggestion about a functionality or piece of content you'd like to see added to the game! See examples in the list below."></span>
+
+<form name="postForm" ng-submit="postFeature()">
+    <div class="form-inline">
+        <label class="sr-only" for="nameInput">Name</label>
+        <input type="text" maxlength="30" class="form-control mb-2 mr-sm-2 mb-sm-0" id="nameInput" ng-model="username" placeholder="Username (optional)">
+
+        <!--<label class="sr-only" for="twitterInput">Twitter</label>
+        <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+            <div class="input-group-addon">@</div>
+            <input type="text" maxlength="20" class="form-control" id="twitterInput" ng-model="twitter" placeholder="Twitter handle (optional)">
+        </div>-->
+    </div>
+
+    <div class="form-group featurebox">
+        <label class="sr-only" for="featureInput">Feature</label>
+        <textarea maxlength="500" class="form-control" id="featureInput" rows="5" ng-model="description" placeholder="Describe a cool feature you'd like to see added to the game (max. 500 characters)"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit</button> <span ng-show="submitted" ng-class="{'alert':true, 'alert-success':true, 'confirmation':true}" ng-bind="confirmation"></span>
+</form>
