@@ -2,7 +2,7 @@
 
 Project Ensemble is an experiment in *crowd design*, where players, developers and artists collaborate to collectively design a browser-based multiplayer online game.
 
-For a detailed description of the project, visit [the website]().
+For a detailed description of the project, visit [the website](http://www.dynetisgames.com/2017/04/20/project-ensemble/).
 
 ## Tour of the code
 
