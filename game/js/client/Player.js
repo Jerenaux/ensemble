@@ -9,7 +9,7 @@ function Player(x,y,key){
 
     // Here is an example of the kind of events Phaser natively listens to
     /*this.events.onKilled.add(function(player){
-        // do sometuing
+        // do something
     },this);*/
 }
 

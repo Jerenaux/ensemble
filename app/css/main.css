@@ -1,3 +1,13 @@
+@font-face {
+    font-family: 'pixel';
+    src: url('/assets/fonts/advocut-webfont.ttf');
+}
+.fontPreload {
+    font-family: 'pixel';
+    position: absolute;
+    left: -100px;
+}
+
 canvas {
     cursor: pointer;
     border-radius: 10px;
