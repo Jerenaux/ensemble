@@ -69,6 +69,10 @@ canvas {
     background-opacity: 0.5;
 }
 
+.accepted-date{
+    font-weight: bold;
+}
+
 .vote_score {
     font-size: 2.2em;
     width: 35px;

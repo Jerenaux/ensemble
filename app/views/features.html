@@ -8,7 +8,7 @@
     </div>
     <div class="col-xs-11 feature_desc">
         <div ng-class="{'panel':true, 'panel-default':true}">
-            <div ng-class="{'panel-heading':true}">{{f.username | formatName}}{{f.stamp | getDelay}} ago</div>
+            <div ng-class="{'panel-heading':true}">{{f.username | formatName}}{{f.stamp | getDelay}} ago <span ng-show="f.accepted" class="accepted-date">| Accepted {{f.acceptedStamp | getDelay}} ago</span></div>
             <div class="panel-body">{{f.desc}}</div>
         </div>
     </div>
