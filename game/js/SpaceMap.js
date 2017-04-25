@@ -19,6 +19,13 @@ SpaceMap.prototype.get = function(x,y){
     return this[x][y];
 };
 
+SpaceMap.prototype.delete = function(x,y){
+    if(!this.hasOwnProperty(x)) return;
+    if(!this[x].hasOwnProperty(y)) return;
+    delete this[x][y];
+    if(Object.keys(this[x]).length == 0) delete this[x];
+};
+
 SpaceMap.prototype.toList = function(){ // serialize to a list representation
     var list = [];
     for(x in this){

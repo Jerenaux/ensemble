@@ -46,8 +46,17 @@ gameServer.getAllPlayers = function(){ // Iterate over the connected clients to 
 };
 
 gameServer.generatePlayer = function(){ // Create a new player object
+    var startingPosition = gameServer.getStartingPosition();
+    //gameServer.makeRoom(startingPosition); // Ensure the player doesn't start on an occupied cell or surrounded by obstacles
     return {
         id: gameServer.lastPlayerID++,
+        x: startingPosition.x,
+        y: startingPosition.y
+    };
+};
+
+gameServer.getStartingPosition = function(){
+    return {
         x: gameServer.randomInt(gameServer.spriteWidth/2,gameServer.worldWidth-gameServer.spriteWidth),
         y: gameServer.randomInt(gameServer.spriteHeight/2,gameServer.worldHeight-gameServer.spriteHeight)
     };
