@@ -163,5 +163,6 @@ app.post('/api/newart', multipartyMiddleware,function(req,res){
 });
 
 module.exports.io = io;
+module.exports.server = server;
 
 require('./game/js/server/gameserver.js');

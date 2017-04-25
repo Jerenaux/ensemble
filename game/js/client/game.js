@@ -11,11 +11,15 @@
 * */
 var Game = {
     spriteSpeed : 1, // "speed" at which the player sprites will travel, in msec/px
+    cellWidth: null, // dimensions of the cells of the grid (received from server and set in Game.initializeGame())
+    cellHeight: null,
     lastClick : 0, // timestamp of the last time the player clicked the map
     clickDelay: 100, //ms before allowing a new click,
     ownPlayerID: -1, // identifier of the sprite of the player (the green one)
     ownSprite: null, // reference to the sprite of the player (the green one)
-    allowMovement : true // set to false when panels are displayed
+    allowMovement : true, // set to false when panels are displayed,
+    blocks: new SpaceMap(), // spaceMap storing true of false if a block is at given coordinates, e.g. isThereABlock = blocks[x][y];
+    initialized: false
 };
 
 /**
@@ -40,8 +44,9 @@ Game.preload = function() {
     game.load.image('grid','assets/sprites/grid.png');
     game.load.image('sprite','assets/sprites/sprite.png'); // sprite of own character
     game.load.image('bluesprite','assets/sprites/sprite_blue.png'); // sprite of other players
+    game.load.image('block', 'assets/sprites/block.png'); // image for blocks
     game.load.spritesheet('9slice', 'assets/sprites/9slicefat.png',10,10); // tilesprite used to make the frame of the welcome panel
-    game.load.spritesheet('close', 'assets/sprites/closesprite.png',20,20); // tilesprite used to make the frame of the welcome panel
+    game.load.spritesheet('close', 'assets/sprites/closesprite.png',20,20); // spritesheet for close button
     // Load data from Json files
     game.load.json('texts', 'assets/json/texts.json'); // All the texts appearing in the game (such as help, ...)
 };
@@ -54,16 +59,19 @@ Game.create = function(){
     // The order of the groups is important, as it determines the rendering order: if a group B is created
     // adter a group A, the sprites in B will render on top of A.
     Game.bgGroup = game.add.group(); // Rendering group for the background tiles
+    Game.blocksGroup = game.add.group(); // Rendering group of blocks
     Game.spritesGroup = game.add.group(); // Rendering group for the player sprites
     Game.UIGroup = game.add.group(); // Rendering group for user interface-related things (such as info panel, ...)
 
     Client.start();
 };
 
-Game.initializeGame = function(ownID,worldW,worldH,players){
+Game.initializeGame = function(ownID,worldW,worldH,cellW,cellH,players,blocks){
     Game.ownPlayerID = ownID; // numerical id of the player's sprite
     console.log('your ID : '+ownID);
 
+    Game.cellWidth = cellW;
+    Game.cellHeight = cellH;
     game.world.bounds.setTo(0, 0, worldW, worldH); // set the dimensions of the game world to those received from the server
     game.camera.bounds = new Phaser.Rectangle(0,0,worldW,worldH); // set the limits in which the camera can move
 
@@ -73,13 +81,19 @@ Game.initializeGame = function(ownID,worldW,worldH,players){
         Game.addNewPlayer(players[i].id,players[i].x,players[i].y);
     }
 
-    Game.createInfoPanel(500,200); // Display the "how to play" instructions panel ; arguments are width and height
+    for(var j = 0; j < blocks.length; j++){
+        Game.addBlock(blocks[j].x,blocks[j].y);
+        Game.blocks.add(blocks[j].x,blocks[j].y,true);
+    }
+
+    Game.createInfoPanel(500,220); // Display the "how to play" instructions panel ; arguments are width and height
+
+    Game.registerControls(); // declares in one single place all the actions available to the players
+    Game.initialized = true;
 };
 
 Game.createBackground = function(width,height){
-    var bg = Game.bgGroup.add(game.add.tileSprite(0,0,width,height,'grid')); // add the grid background and let it cover the whole world
-    bg.inputEnabled = true;
-    bg.events.onInputDown.add(Game.handleClick,this);
+    Game.bg = Game.bgGroup.add(game.add.tileSprite(0,0,width,height,'grid')); // add the grid background and let it cover the whole world
 };
 
 Game.addNewPlayer = function(id,x,y){
@@ -100,11 +114,28 @@ Game.createInfoPanel = function(width,height){
     panel.addText(Game.texts.howToPlay);
 };
 
+Game.registerControls = function(){
+    // Allow clicks on the background
+    Game.bg.inputEnabled = true;
+    Game.bg.events.onInputDown.add(Game.handleClick,this);
+    // register the space bar to drop blocks
+    var blockKey = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
+    blockKey.onDown.add(Game.dropBlock, this);
+};
+
 Game.handleClick = function(){
     if(!Game.allowMovement) return;
     if(Date.now() - Game.lastClick < Game.clickDelay) return; // prevent rapid firing
     Game.lastClick = Date.now();
     Client.sendClick(game.input.worldX,game.input.worldY);
+};
+
+Game.dropBlock = function(){
+    // compute the coordinates of the current cell
+    var cellX = Math.floor(Game.ownSprite.x/Game.cellWidth);
+    var cellY = Math.floor(Game.ownSprite.y/Game.cellHeight);
+    if(Game.blocks.get(cellX,cellY)) return; // don't drop a block if there is one already
+    Client.sendBlock(cellX,cellY);
 };
 
 Game.movePlayer = function(id,x,y){
@@ -115,6 +146,10 @@ Game.movePlayer = function(id,x,y){
     var duration = distance*Game.spriteSpeed;
     tween.to({x:x,y:y}, duration);
     tween.start();
+};
+
+Game.addBlock = function(x,y){
+    Game.blocksGroup.add(game.add.sprite(x*Game.cellWidth,y*Game.cellHeight,'block')); // drop a block of random color
 };
 
 Game.removePlayer = function(id){
