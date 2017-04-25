@@ -1,4 +1,7 @@
-<div><h3>Suggested features:</h3></div>
+<h3 class="suggesthead">Suggested features:</h3>
+<span title="More information" class="fhelp glyphicon glyphicon-question-sign" data-toggle="popover" data-trigger="hover"
+                data-content="Features are ordered by number of votes. Features in green have been implemented. Click on the arrows to vote. You can vote on multiple features, but only once for each. Hover over the arrows to see the number of upvotes and downvotes."></span>
+
 
 <div ng-repeat="f in features | orderBy: '-(upvotes-downvotes)'" ng-class="{'row':true, 'feature':true, 'accepted':f.accepted}">
     <div class="col-xs-1 feature_votes">
