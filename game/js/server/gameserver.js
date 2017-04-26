@@ -57,8 +57,8 @@ gameServer.generatePlayer = function(){ // Create a new player object
 
 gameServer.getStartingPosition = function(){
     return {
-        x: gameServer.randomInt(gameServer.spriteWidth/2,gameServer.worldWidth-gameServer.spriteWidth),
-        y: gameServer.randomInt(gameServer.spriteHeight/2,gameServer.worldHeight-gameServer.spriteHeight)
+        x: math.randomInt(gameServer.spriteWidth/2,gameServer.worldWidth-gameServer.spriteWidth),
+        y: math.randomInt(gameServer.spriteHeight/2,gameServer.worldHeight-gameServer.spriteHeight)
     };
 };
 
@@ -142,10 +142,6 @@ gameServer.dropBlock = function(player,x,y){ // return true for success, false o
 // returns true if there is a block on the given cell
 gameServer.isBlockAt = function(x,y){  // x and y in cell coordinates, not px
     return gameServer.blocks.get(x,y) == 1;
-};
-
-gameServer.randomInt = function(low, high) {
-    return Math.floor(Math.random() * (high - low) + low);
 };
 
 gameServer.clamp = function(x,min,max){ // restricts a value to a given interval (return the value unchanged if within the interval
