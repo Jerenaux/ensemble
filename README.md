@@ -30,7 +30,4 @@ controls the behavior of the views). This organization is controlled in `app.js`
 
 ## Running the code
 
-You need to have Node.js installed. Clone the repository and type in a terminal where you cloned it:
-`npm install`
-`node server.js`
-Then navigate to `localhost:8081`.
+You need to have Node.js installed. Clone the repository and type in a terminal where you cloned it: `npm install` and then `node server.js`. Then navigate to `localhost:8081`.
