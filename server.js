@@ -28,11 +28,8 @@ app.get('/',function(req,res){
     res.sendFile(__dirname+'/app/index.html');
 });
 
-//mongoHost = 'localhost:27017';
-//mongoDBName = 'ensemble';
-
 server.listen(process.env.PORT || 8081,function(){
-    mongo.connect(process.env.MONGODB_URI,function(err,db){
+    mongo.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/ensemble',function(err,db){
         if(err) throw(err);
         server.db = db;
         console.log('Connection to db established');
