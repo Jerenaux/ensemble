@@ -28,3 +28,9 @@ located in the `app` directory. As the app was made with AngularJS,
 the code is mostly distributed in terms of `views` (the HTML templates of what should be displayed, including `index.html`) and `controllers` (the logic that
 controls the behavior of the views). This organization is controlled in `app.js`
 
+## Running the code
+
+You need to have Node.js installed. Clone the repository and type in a terminal where you cloned it:
+`npm install`
+`node server.js`
+Then navigate to `localhost:8081`.
