@@ -66,11 +66,18 @@ canvas {
 
 .accepted .panel-body {
     background: url('/images/accepted.png') no-repeat bottom right;
-    background-opacity: 0.5;
 }
 
 .accepted-date{
     font-weight: bold;
+}
+
+.ongoing .panel-heading {
+    background: #ffc67c;
+}
+
+.ongoing .panel-body {
+    background: url('/images/cog.png') no-repeat bottom right;
 }
 
 .vote_score {

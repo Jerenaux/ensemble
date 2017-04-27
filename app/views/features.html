@@ -3,7 +3,7 @@
                 data-content="Features are ordered by number of votes. Features in green have been implemented. Click on the arrows to vote. You can vote on multiple features, but only once for each. Hover over the arrows to see the number of upvotes and downvotes."></span>
 
 
-<div ng-repeat="f in features | orderBy: '-(upvotes-downvotes)'" ng-class="{'row':true, 'feature':true, 'accepted':f.accepted}">
+<div ng-repeat="f in features | orderBy: '-(upvotes-downvotes)'" ng-class="{'row':true, 'feature':true, 'accepted':f.accepted, 'ongoing':f.ongoing}">
     <div class="col-xs-1 feature_votes">
         <div ng-click="upVote(f)" title="{{f.upvotes | filterVotes: 'up'}}" ng-class="{'feature_vote_icon':true, 'arrow_up':true, 'on':f.upvoted}"></div>
         <div class="vote_score">{{f.upvotes - f.downvotes}}</div>
@@ -11,7 +11,7 @@
     </div>
     <div class="col-xs-11 feature_desc">
         <div ng-class="{'panel':true, 'panel-default':true}">
-            <div ng-class="{'panel-heading':true}">{{f.username | formatName}}{{f.stamp | getDelay}} ago <span ng-show="f.accepted" class="accepted-date">| Accepted {{f.acceptedStamp | getDelay}} ago</span></div>
+            <div ng-class="{'panel-heading':true}">{{f.username | formatName}}{{f.stamp | getDelay}} ago <span ng-show="f.accepted" class="accepted-date">| Accepted {{f.acceptedStamp | getDelay}} ago</span><span ng-show="f.ongoing" class="accepted-date">| In the process of being implemented</span></div>
             <div class="panel-body">{{f.desc}}</div>
         </div>
     </div>
