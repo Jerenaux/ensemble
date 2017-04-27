@@ -139,13 +139,15 @@ Game.dropBlock = function(){
 };
 
 Game.movePlayer = function(id,x,y){
+    console.log('move to '+x+', '+y);
     var player = Game.players[id];
+    if(player.tween) player.tween.stop();
     var distance = Phaser.Math.distance(player.x,player.y,x,y);
     // The following tweens a sprite linearly from its current position to the received (x,y) coordinates
-    var tween = game.add.tween(player);
+    player.tween = game.add.tween(player);
     var duration = distance*Game.spriteSpeed;
-    tween.to({x:x,y:y}, duration);
-    tween.start();
+    player.tween.to({x:x,y:y}, duration);
+    player.tween.start();
 };
 
 Game.addBlock = function(x,y){

@@ -18,7 +18,6 @@ gameServer.initialize = function(){
     server.db.collection('blocks').find({}).toArray(function(err,blocks){
         if(err) throw err;
         gameServer.blocks.fromList(blocks);
-        console.log(gameServer.blocks);
     });
     console.log('Initialized');
 };
