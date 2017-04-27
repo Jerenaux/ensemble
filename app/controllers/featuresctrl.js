@@ -29,7 +29,7 @@ app.controller('FeaturesCtrl',[
 
         $scope.updateVotes = function(f,change){
             if($scope.hasVoted(f._id)) return;
-            if(f.accepted == true) return;
+            if(f.accepted == true || f.ongoing == true) return;
 
             $http.post("/api/vote/", {id: f._id,change:change}).then(function(res) {
                 if(res.status == 200) {
