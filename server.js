@@ -128,8 +128,6 @@ var multipartyMiddleware = require('connect-multiparty')(); // Needed to access 
 app.mailTransporter = nodemailer.createTransport({ // transporter used to send the artworks by e-mail
     service: 'gmail',
     auth: {
-        //user: 'dynetisgames@gmail.com',
-        //pass: 'dynetisgames2017'
         user: process.env.dynetisMailAddress,
         pass: process.env.dynetisMailPassword
     },
