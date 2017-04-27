@@ -87,6 +87,7 @@ Game.initializeGame = function(ownID,worldW,worldH,cellW,cellH,players,blocks){
     }
 
     Game.createInfoPanel(500,220); // Display the "how to play" instructions panel ; arguments are width and height
+    Game.createNbConnectedInfo();
 
     Game.registerControls(); // declares in one single place all the actions available to the players
     Game.initialized = true;
@@ -139,7 +140,6 @@ Game.dropBlock = function(){
 };
 
 Game.movePlayer = function(id,x,y){
-    console.log('move to '+x+', '+y);
     var player = Game.players[id];
     if(player.tween) player.tween.stop();
     var distance = Phaser.Math.distance(player.x,player.y,x,y);
@@ -161,6 +161,19 @@ Game.removePlayer = function(id){
 
 Game.setCursor = function(){
     game.canvas.style.cursor = 'pointer';
+};
+
+Game.createNbConnectedInfo = function(){
+    Game.nbConnectedText = Game.UIGroup.add(game.add.text(670, 375, '0 players', {
+        font: '16px pixel',
+        fill: "#eeeeee"
+    }));
+    Game.nbConnectedText.fixedToCamera = true;
+};
+
+Game.updateNbConnected = function(nb){
+    if(!Game.nbConnectedText) return;
+    Game.nbConnectedText.text = nb+' player'+(nb > 1 ? 's' : '');
 };
 
 Game.update = function() {};

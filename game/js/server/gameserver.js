@@ -26,7 +26,10 @@ io.on('connection',function(socket){
     socket.on('newplayer',function(){
         socket.player = gameServer.generatePlayer(); // Creates a new player object and stores it in the socket
         socket.emit('init',gameServer.generateInitPacket(socket.player.id)); // send back an initialization packet
-        socket.broadcast.emit('newplayer',socket.player); // notify the other players of the arrival of a new player
+        socket.broadcast.emit('newplayer',{
+            player: socket.player,
+            nbConnected: gameServer.getNbConnected()
+        }); // notify the other players of the arrival of a new player
 
         // Update player position based on click information
         socket.on('click',function(data){ // data.x and data.y are in px
@@ -39,7 +42,10 @@ io.on('connection',function(socket){
         });
 
         socket.on('disconnect',function(){
-            io.emit('remove',socket.player.id);
+            io.emit('remove',{
+                id:socket.player.id,
+                nbConnected: gameServer.getNbConnected()
+            });
         });
     });
 });
@@ -78,7 +84,8 @@ gameServer.generateInitPacket = function(id){ // Generate an object with a few i
         cellHeight: gameServer.cellHeight,
         players: gameServer.getAllPlayers(),
         blocks: gameServer.blocks.toList(),
-        ownID: id
+        ownID: id,
+        nbConnected: gameServer.getNbConnected()
   };
 };
 
@@ -167,6 +174,10 @@ gameServer.computeCellCoordinates = function(x,y){ // return the coordinates of 
         x: Math.floor(x/gameServer.cellWidth),
         y: Math.floor(y/gameServer.cellHeight)
     };
+};
+
+gameServer.getNbConnected = function(){
+    return Object.keys(io.sockets.connected).length;
 };
 
 module.exports.gameServer = gameServer;
