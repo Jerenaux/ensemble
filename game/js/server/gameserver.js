@@ -14,6 +14,15 @@ gameServer = {
     blocks: new SpaceMap() // spaceMap storing 1 or 0 if a block is at given coordinates, e.g. isThereABlock = blocks[x][y];
 };
 
+gameServer.initialize = function(){
+    server.db.collection('blocks').find({}).toArray(function(err,blocks){
+        if(err) throw err;
+        gameServer.blocks.fromList(blocks);
+        console.log(gameServer.blocks);
+    });
+    console.log('Initialized');
+};
+
 io.on('connection',function(socket){
     socket.on('newplayer',function(){
         socket.player = gameServer.generatePlayer(); // Creates a new player object and stores it in the socket
@@ -136,6 +145,12 @@ gameServer.dropBlock = function(player,x,y){ // return true for success, false o
     if(cellCoordinates.x != x || cellCoordinates.y != y ) return false; // the player cannot drop a block on a different cell than his
     if(gameServer.isBlockAt(x,y)) return false; // cannot put a block if there is one already
     gameServer.blocks.add(x,y,1);
+    var blockDoc = {
+        x: x,
+        y: y,
+        value: 1 //  x,y,value format used by SpaceMap to (de)serialize to/from lists
+    };
+    server.db.collection('blocks').insertOne(blockDoc,function(err){if(err) throw err;});
     return true;
 };
 
@@ -154,3 +169,5 @@ gameServer.computeCellCoordinates = function(x,y){ // return the coordinates of 
         y: Math.floor(y/gameServer.cellHeight)
     };
 };
+
+module.exports.gameServer = gameServer;

@@ -7,6 +7,7 @@ var mongo = require('mongodb').MongoClient;
 var ObjectId = require('mongodb').ObjectID;
 var io = require('socket.io').listen(server);
 var nodemailer = require('nodemailer');
+var gameServer = {};
 
 app.use('/css',express.static(__dirname + '/app/css'));
 app.use('/game',express.static(__dirname + '/game/js'));
@@ -33,6 +34,7 @@ server.listen(process.env.PORT || 8081,function(){
         if(err) throw(err);
         server.db = db;
         console.log('Connection to db established');
+        gameServer.initialize();
     });
     console.log('Listening on '+server.address().port);
 });
@@ -166,4 +168,4 @@ app.post('/api/newart', multipartyMiddleware,function(req,res){
 module.exports.io = io;
 module.exports.server = server;
 
-require('./game/js/server/gameserver.js');
+gameServer = require('./game/js/server/gameserver.js').gameServer;
