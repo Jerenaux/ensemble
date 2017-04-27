@@ -19,12 +19,6 @@ app.use('/images',express.static(__dirname + '/app/images'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-// Simple code to keep app awake on Heroku
-var http = require("http");
-setInterval(function() {
-    http.get("http://projectensemble.herokuapp.com");
-}, 1000*60*20); // every 20 minutes
-
 app.get('/',function(req,res){
     res.sendFile(__dirname+'/app/index.html');
 });
