@@ -30,4 +30,6 @@ controls the behavior of the views). This organization is controlled in `app.js`
 
 ## Running the code
 
-You need to have Node.js installed. Clone the repository and type in a terminal where you cloned it: `npm install` and then `node server.js`. Then navigate to `localhost:8081`.
+You need to have Node.js and MongoDB installed, and MongoDB running. Clone the repository and type in a terminal where you cloned it: `npm install` and then `node server.js`. Then navigate to `localhost:8081`.
+
+If you get an error involving `compile: [(...args) => this._convertDataImages(...args)],`, your Node.js is probably not up to date (check with `node -v`). Update it to the most recent version and it should work.
