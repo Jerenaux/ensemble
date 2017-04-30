@@ -86,7 +86,7 @@ Game.initializeGame = function(ownID,worldW,worldH,cellW,cellH,players,blocks){
         Game.blocks.add(blocks[j].x,blocks[j].y,true);
     }
 
-    Game.createInfoPanel(500,220); // Display the "how to play" instructions panel ; arguments are width and height
+    Game.createInfoPanel(500,250); // Display the "how to play" instructions panel ; arguments are width and height
     Game.createNbConnectedInfo();
 
     Game.registerControls(); // declares in one single place all the actions available to the players
