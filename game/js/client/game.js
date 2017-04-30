@@ -13,11 +13,11 @@ var Game = {
     spriteSpeed : 1, // "speed" at which the player sprites will travel, in msec/px
     cellWidth: null, // dimensions of the cells of the grid (received from server and set in Game.initializeGame())
     cellHeight: null,
-    lastClick : 0, // timestamp of the last time the player clicked the map
-    clickDelay: 100, //ms before allowing a new click,
+    lastMove : 0, // timestamp of the last time the player moved
+    moveDelay: 100, //ms before allowing a new movement
     ownPlayerID: -1, // identifier of the sprite of the player (the green one)
     ownSprite: null, // reference to the sprite of the player (the green one)
-    allowMovement : true, // set to false when panels are displayed,
+    allowAction : true, // set to false when panels are displayed,
     blocks: new SpaceMap(), // spaceMap storing true of false if a block is at given coordinates, e.g. isThereABlock = blocks[x][y];
     initialized: false
 };
@@ -120,23 +120,36 @@ Game.registerControls = function(){
     Game.bg.inputEnabled = true;
     Game.bg.events.onInputDown.add(Game.handleClick,this);
     // register the space bar to drop blocks
-    var blockKey = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
-    blockKey.onDown.add(Game.dropBlock, this);
+    game.input.keyboard.addKey(Phaser.Keyboard.ENTER).onDown.add(Game.dropBlock, this);
+    // register the arrows (the associated logic takes place Game.update())
+    Game.arrows = game.input.keyboard.createCursorKeys();
+    // register WASD key (regardless of actual keyboard layout) (the associated logic takes place Game.update())
+    Game.WASD = {
+        up: game.input.keyboard.addKey(Phaser.Keyboard.W),
+        down: game.input.keyboard.addKey(Phaser.Keyboard.S),
+        left: game.input.keyboard.addKey(Phaser.Keyboard.A),
+        right: game.input.keyboard.addKey(Phaser.Keyboard.D)
+    };
+    // Note: if you register the spacebar at some point, don't forget to use addKeyCapture()
 };
 
 Game.handleClick = function(){
-    if(!Game.allowMovement) return;
-    if(Date.now() - Game.lastClick < Game.clickDelay) return; // prevent rapid firing
-    Game.lastClick = Date.now();
-    Client.sendClick(game.input.worldX,game.input.worldY);
+    if(!Game.allowAction) return;
+    if(Game.canMoveAgain()) Client.sendMovement(game.input.worldX,game.input.worldY);
 };
 
-Game.dropBlock = function(){
+Game.canMoveAgain = function(){ // check if enough time has elapsed to allow a new movement
+    if(Date.now() - Game.lastMove < Game.moveDelay) return false; // prevent rapid firing
+    Game.lastMove = Date.now();
+    return true;
+};
+
+Game.dropBlock = function(){ // check if a block can be dropped at this position, and if yes inform the server
+    if(!Game.allowAction) return;
     // compute the coordinates of the current cell
-    var cellX = Math.floor(Game.ownSprite.x/Game.cellWidth);
-    var cellY = Math.floor(Game.ownSprite.y/Game.cellHeight);
-    if(Game.blocks.get(cellX,cellY)) return; // don't drop a block if there is one already
-    Client.sendBlock(cellX,cellY);
+    var cell = Game.computeCellCoordinates(Game.ownSprite.x,Game.ownSprite.y);
+    if(Game.isBlockAt(cell.x,cell.y)) return; // don't drop a block if there is one already
+    Client.sendBlock(cell.x,cell.y);
 };
 
 Game.movePlayer = function(id,x,y){
@@ -153,6 +166,7 @@ Game.movePlayer = function(id,x,y){
 
 Game.addBlock = function(x,y){
     Game.blocksGroup.add(game.add.sprite(x*Game.cellWidth,y*Game.cellHeight,'block')); // drop a block of random color
+    Game.blocks.add(x,y,true);
 };
 
 Game.removePlayer = function(id){
@@ -177,4 +191,66 @@ Game.updateNbConnected = function(nb){
     Game.nbConnectedText.text = nb+' player'+(nb > 1 ? 's' : '');
 };
 
-Game.update = function() {};
+Game.isUpPressed = function(){
+    return (Game.arrows.up.isDown || Game.WASD.up.isDown);
+};
+
+Game.isDownPressed = function(){
+    return (Game.arrows.down.isDown || Game.WASD.down.isDown);
+};
+
+Game.isRightPressed = function(){
+    return (Game.arrows.right.isDown || Game.WASD.right.isDown);
+};
+
+Game.isLeftPressed = function(){
+    return (Game.arrows.left.isDown || Game.WASD.left.isDown);
+};
+
+Game.update = function() {
+    if(!Game.initialized) return;
+    if(Game.allowAction) Game.computeMovement(Game.computeAngle());
+};
+
+Game.computeAngle = function(){ // compute direction based on pressed directional keys
+    var angle = null;
+    if (Game.isUpPressed() && !Game.isRightPressed() && !Game.isLeftPressed()) { // go up
+        angle = 90;
+    }else if (Game.isUpPressed() && Game.isLeftPressed()) { // up left
+        angle = 135;
+    }else if (Game.isLeftPressed() && !Game.isUpPressed() && !Game.isDownPressed()) { // left
+        angle = 180;
+    }else if (Game.isLeftPressed() && Game.isDownPressed()) { // down left
+        angle = 225;
+    }else if (Game.isDownPressed() && !Game.isRightPressed() && !Game.isLeftPressed()) { // down
+        angle = 270;
+    }else if (Game.isDownPressed() && Game.isRightPressed()) { // down right
+        angle = 315;
+    }else if (Game.isRightPressed() && !Game.isDownPressed() && !Game.isUpPressed()) { // right
+        angle = 0;
+    }else if (Game.isUpPressed() && Game.isRightPressed()) { // up right
+        angle = 45;
+    }
+    return angle;
+};
+
+Game.computeMovement = function(angle){ // compute the new coordinates of the player when moving in a certain direction
+    if(angle == null) return;
+    if(!Game.canMoveAgain()) return;
+    angle *= (Math.PI/180);
+    var newX = Game.ownSprite.position.x + Math.cos(angle)*Game.cellWidth;
+    var newY = Game.ownSprite.position.y + -Math.sin(angle)*Game.cellHeight;
+    Client.sendMovement(newX,newY);
+};
+
+Game.computeCellCoordinates = function(x,y){ // return the coordinates of the cell corresponding of a pair of raw coordinates
+    return {
+        x: Math.floor(x/Game.cellWidth),
+        y: Math.floor(y/Game.cellHeight)
+    };
+};
+
+// returns true if there is a block on the given cell
+Game.isBlockAt = function(x,y){  // x and y in cell coordinates, not px
+    return Game.blocks.get(x,y) == true;
+};

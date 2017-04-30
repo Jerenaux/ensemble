@@ -9,7 +9,7 @@ function Panel(x,y,width,height,blockMovement){
     // the middle, the initial image can be scaled to any rectangular dimensions without distortions.
     Phaser.Sprite.call(this, game, x,y); // Create a container with no texture
     game.add.existing(this);
-    if(blockMovement) Game.allowMovement = false;
+    if(blockMovement) Game.allowAction = false;
     this.fixedToCamera = true;
     this.blockMovement = blockMovement;
 
@@ -57,7 +57,7 @@ Panel.prototype.makeCloseButton = function(x){
 };
 
 Panel.prototype.close = function(){
-    if(this.blockMovement) Game.allowMovement = true; // re-allow movement upon closing panel
+    if(this.blockMovement) Game.allowAction = true; // re-allow movement upon closing panel
     this.destroy();
 };
 

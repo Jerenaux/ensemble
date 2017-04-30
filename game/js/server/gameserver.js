@@ -112,7 +112,7 @@ gameServer.checkObstacles = function(startx,starty,endx,endy){ // coordinates in
     var chunkLength = 20; // The smaller, the more precise the algorithm, but 20 seems to do a good job (for a cell size of 40)
     var startCell = gameServer.computeCellCoordinates(startx,starty);
     var angle = gameServer.computeAngle(startx,starty,endx,endy); // angle in radians
-    var speedX = Math.cos(angle); //arbitrary speed of 10 for computations
+    var speedX = Math.cos(angle);
     var speedY = -Math.sin(angle);
     var dist = gameServer.euclideanDistance(startx,starty,endx,endy);
     // Split the path in chunks

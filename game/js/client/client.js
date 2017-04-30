@@ -11,8 +11,8 @@ Client.start = function(){
     Client.socket.emit('newplayer'); // notify the server of the arrival of a new player
 };
 
-Client.sendClick = function(x,y){
-  Client.socket.emit('click',{x:x,y:y}); // notify the server of a click
+Client.sendMovement = function(x,y){
+  Client.socket.emit('click',{x:x,y:y}); // notify the server of a movement
 };
 
 Client.sendBlock = function(x,y){
