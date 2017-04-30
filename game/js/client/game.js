@@ -140,6 +140,7 @@ Game.dropBlock = function(){
 };
 
 Game.movePlayer = function(id,x,y){
+    if(!Game.initialized) return;
     var player = Game.players[id];
     if(player.tween) player.tween.stop();
     var distance = Phaser.Math.distance(player.x,player.y,x,y);
