@@ -199,19 +199,19 @@ Game.updateNbConnected = function(nb){
 };
 
 Game.isUpPressed = function(){
-    return (Game.arrows.up.isDown || Game.WASD.up.isDown);
+    return (Game.arrows.up.isDown);
 };
 
 Game.isDownPressed = function(){
-    return (Game.arrows.down.isDown || Game.WASD.down.isDown);
+    return (Game.arrows.down.isDown);
 };
 
 Game.isRightPressed = function(){
-    return (Game.arrows.right.isDown || Game.WASD.right.isDown);
+    return (Game.arrows.right.isDown);
 };
 
 Game.isLeftPressed = function(){
-    return (Game.arrows.left.isDown || Game.WASD.left.isDown);
+    return (Game.arrows.left.isDown);
 };
 
 Game.update = function() {
