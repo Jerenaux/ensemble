@@ -259,5 +259,6 @@ Game.computeCellCoordinates = function(x,y){ // return the coordinates of the ce
 
 // returns true if there is a block on the given cell
 Game.isBlockAt = function(x,y){  // x and y in cell coordinates, not px
-    return (Game.blocks.get(x,y) !== undefined);
+    var block = Game.blocks.get(x,y);
+    return (block !== undefined && block !== null);
 };
