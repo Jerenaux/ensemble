@@ -23,7 +23,7 @@ BlocksManager.listBlocks = function(){ // returns a list of all the blocks
     return BlocksManager.blocks.toList();
 };
 
-BlocksManager.addBlock = function(x,y){ // return true for success, false otherwise
+BlocksManager.addBlock = function(x,y){ // return true for success, false otherwise ; coordinates in cells, not px
     if(BlocksManager.isBlockAt(x,y)) return false; // cannot put a block if there is one already
     BlocksManager.insertBlockIntoSpaceMap(x,y);
     BlocksManager.insertBlockIntoDB(x,y);

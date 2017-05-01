@@ -162,4 +162,4 @@ app.post('/api/newart', multipartyMiddleware,function(req,res){
 module.exports.io = io;
 module.exports.server = server;
 
-gameServer = require('./game/js/server/gameserver.js').gameServer;
+var gameServer = require('./game/js/server/gameserver.js').gameServer;

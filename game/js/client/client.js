@@ -12,7 +12,7 @@ Client.start = function(){
 };
 
 Client.sendMovement = function(x,y){
-  Client.socket.emit('click',{x:x,y:y}); // notify the server of a movement
+  Client.socket.emit('move',{x:x,y:y}); // notify the server of a movement
 };
 
 Client.sendBlock = function(){
