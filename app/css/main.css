@@ -65,7 +65,7 @@ canvas {
 }
 
 .accepted .panel-body {
-    background: url('/images/accepted.png') no-repeat bottom right;
+    background: url('/images/accepted.png') no-repeat top right;
 }
 
 .accepted-date{
@@ -77,7 +77,7 @@ canvas {
 }
 
 .ongoing .panel-body {
-    background: url('/images/cog.png') no-repeat bottom right;
+    background: url('/images/cog.png') no-repeat top right;
 }
 
 .accepted .feature_vote_icon {
@@ -118,4 +118,17 @@ canvas {
 
 .confirmation {
     margin-left: 20px;
+}
+
+.comment {
+    margin-bottom: 7px;
+}
+
+.comment_author{
+    font-style: italic;
+    font-size: 0.8em;
+}
+
+.comments_spacer{
+    margin-bottom: 15px;
 }

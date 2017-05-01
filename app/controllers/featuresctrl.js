@@ -14,7 +14,7 @@ app.controller('FeaturesCtrl',[
             $http.get("/api/features/").then(function(res) {
                 if(res.status == 200){
                     postWatcher.changeState();
-                    $scope.features = res.data.map($scope.updateArrows);
+                    $scope.features = res.data.map($scope.processFeatures);
                 }
             },function(err){});
         };
@@ -44,7 +44,11 @@ app.controller('FeaturesCtrl',[
             },function(err){});
         };
 
-        $scope.updateArrows = function(f){
+        $scope.processFeatures = function(f){
+            // Comments-related preprocessing
+            f.showCommentForm = false;
+            f.canComment = true;
+            // Change arrows based on vote data
             var vote = $scope.getVote(f._id);
             if(vote == 1){
                 f.upvoted = true;
@@ -64,6 +68,27 @@ app.controller('FeaturesCtrl',[
 
         $scope.registerVote = function(id,change){
             localStorage.setItem('vote_'+id,change);
+        };
+
+        $scope.postComment = function(feature) {
+            if(feature.comment === undefined || feature.comment.length == 0) return;
+            if(!feature.canComment) return;
+            feature.canComment = false;
+            var comment = {
+                comment: feature.comment,
+                username: feature.commentUsername
+            };
+            $http.post("/api/newcomment/", {
+                feature: feature._id,
+                doc: comment
+            }).then(function(res) {
+                if(res.status == 201) {
+                    feature.showCommentForm = false;
+                    feature.comment = '';
+                    $scope.getFeatures();
+                }
+                feature.canComment = true;
+            });
         };
 
         $scope.getFeatures();

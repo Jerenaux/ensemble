@@ -124,12 +124,12 @@ Game.registerControls = function(){
     // register the arrows (the associated logic takes place Game.update())
     Game.arrows = game.input.keyboard.createCursorKeys();
     // register WASD key (regardless of actual keyboard layout) (the associated logic takes place Game.update())
-    Game.WASD = {
+    /*Game.WASD = {
         up: game.input.keyboard.addKey(Phaser.Keyboard.W),
         down: game.input.keyboard.addKey(Phaser.Keyboard.S),
         left: game.input.keyboard.addKey(Phaser.Keyboard.A),
         right: game.input.keyboard.addKey(Phaser.Keyboard.D)
-    };
+    };*/
     // Note: if you register the spacebar at some point, don't forget to use addKeyCapture()
 };
 
@@ -170,6 +170,7 @@ Game.addBlock = function(x,y){
 };
 
 Game.removeBlock = function(x,y){
+    if(!Game.initialized) return;
     var block = Game.blocks.get(x,y);
     block.destroy();
     Game.blocks.delete(x,y);

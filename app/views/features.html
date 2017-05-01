@@ -4,16 +4,48 @@
 
 
 <div ng-repeat="f in features | orderBy: '-(upvotes-downvotes)'" ng-class="{'row':true, 'feature':true, 'accepted':f.accepted, 'ongoing':f.ongoing}">
+    <!-- Voting arrows -->
     <div class="col-xs-1 feature_votes">
         <div ng-click="upVote(f)" title="{{f.upvotes | filterVotes: 'up'}}" ng-class="{'feature_vote_icon':true, 'arrow_up':true, 'on':f.upvoted}"></div>
         <div title="{{f.upvotes | filterVotes: 'up'}}, {{f.downvotes | filterVotes: 'down'}}" class="vote_score">{{f.upvotes - f.downvotes}}</div>
         <div ng-click="downVote(f)" title="{{f.downvotes | filterVotes: 'down'}}" ng-class="{'feature_vote_icon':true, 'arrow_down':true, 'on':f.downvoted}"></div>
     </div>
+    <!-- Body of the suggestion -->
     <div class="col-xs-11 feature_desc">
         <div ng-class="{'panel':true, 'panel-default':true}">
             <div ng-class="{'panel-heading':true}">{{f.username | formatName}}{{f.stamp | getDelay}} ago <span ng-show="f.accepted" class="accepted-date">| Added {{f.acceptedStamp | getDelay}} ago</span><span ng-show="f.ongoing" class="accepted-date">| In the process of being implemented</span></div>
-            <div class="panel-body">{{f.desc}}</div>
+            <div class="panel-body">
+                <!-- Feature description -->
+                {{f.desc}}
+
+                <hr/>
+                <!-- Comments -->
+                <div class="comment" ng-repeat="c in f.comments | orderBy: '-(c.stamp)'" ng-show="f.comments.length > 0">
+                    {{c.comment}}&nbsp;<span class="comment_author">&mdash;&nbsp;{{c.username | formatName}} {{c.stamp | getDelay}} ago</span>
+                </div>
+                <div ng-show="f.comments.length > 0 && f.showCommentForm == true"><hr/></div>
+                <!-- Comments form -->
+                <button class="btn-primary btn-xs" ng-click="f.showCommentForm = true" ng-show="!f.showCommentForm">Add a comment</button>
+                <div ng-show="f.showCommentForm">
+                    <form name="commentForm" ng-submit="postComment(f)">
+                        <div class="form-inline">
+                            <label class="sr-only" for="commentNameInput">Name</label>
+                            <input type="text" maxlength="30" class="form-control mb-2 mr-sm-2 mb-sm-0" id="commentNameInput" ng-model="f.commentUsername" placeholder="Username (optional)">
+                        </div>
+
+                        <div class="form-group featurebox">
+                            <label class="sr-only" for="commentInput">Comment</label>
+                            <textarea maxlength="200" class="form-control" id="commentInput" rows="3" ng-model="f.comment"
+                                      placeholder="Enter a comment (max. 200 characters)"></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <span ng-show="f.submittedComment" ng-class="{'alert':true, 'alert-success':true, 'confirmation':true}">Your comment was successfully added</span>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
+
 </div>
 <span>{{features.length}} features proposed so far</span>

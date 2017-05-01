@@ -35,7 +35,6 @@ server.listen(process.env.PORT || 8081,function(){
 
 // Handles submission of a new feature
 app.post('/api/newfeature', function(req, res) {
-    console.log(req.body);
     var doc = req.body;
     if(doc.desc === undefined) { // no content in the description
         res.status(400).end();
@@ -49,6 +48,32 @@ app.post('/api/newfeature', function(req, res) {
     doc.desc = doc.desc.substring(0,500); // Limit description to 500 characters
 
     server.db.collection('features').insertOne(doc,function(err){
+        if(err) {
+            res.status(500).end();
+            throw err;
+        }else {
+            res.status(201).end();
+        }
+    });
+});
+
+app.post('/api/newcomment',function(req,res){
+    var featureID = req.body.feature;
+    var doc = req.body.doc;
+    if(doc.comment === undefined || doc.length == 0){
+        res.status(400).end();
+        return;
+    }
+    doc.stamp = Date.now();
+    if(doc.username !== undefined) doc.username = doc.username.substring(0,30); // Limit username length to 30 characters
+    doc.comment = doc.comment.substring(0,200);
+
+    server.db.collection('features').updateOne(
+        {_id: new ObjectId(featureID)},
+        {'$push':{
+            'comments' : doc
+        }},
+        function(err){
         if(err) {
             res.status(500).end();
             throw err;
