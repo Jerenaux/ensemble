@@ -149,7 +149,7 @@ Game.dropBlock = function(){ // check if a block can be dropped at this position
     // compute the coordinates of the current cell
     var cell = Game.computeCellCoordinates(Game.ownSprite.x,Game.ownSprite.y);
     if(Game.isBlockAt(cell.x,cell.y)) return; // don't drop a block if there is one already
-    Client.sendBlock(cell.x,cell.y);
+    Client.sendBlock();
 };
 
 Game.movePlayer = function(id,x,y){

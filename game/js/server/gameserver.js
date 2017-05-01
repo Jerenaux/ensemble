@@ -1,6 +1,5 @@
 var io = require('../../../server.js').io;
-var server = require('../../../server.js').server;
-var SpaceMap = require('../SpaceMap.js').SpaceMap;
+var BlocksManager = require('./BlocksManager.js').BlocksManager;
 var math = require('mathjs');
 
 gameServer = {
@@ -10,15 +9,11 @@ gameServer = {
     spriteWidth: 32,//px
     spriteHeight: 32, //px
     cellWidth: 40, // dimensions in px of cells of the grid
-    cellHeight: 40,
-    blocks: new SpaceMap() // spaceMap storing 1 or 0 if a block is at given coordinates, e.g. isThereABlock = blocks[x][y];
+    cellHeight: 40
 };
 
 gameServer.initialize = function(){
-    server.db.collection('blocks').find({}).toArray(function(err,blocks){
-        if(err) throw err;
-        gameServer.blocks.fromList(blocks);
-    });
+    BlocksManager.getBlocksFromDB();
     console.log('Initialized');
 };
 
@@ -31,14 +26,14 @@ io.on('connection',function(socket){
             nbConnected: gameServer.getNbConnected()
         }); // notify the other players of the arrival of a new player
 
-        // Update player position based on click information
-        socket.on('click',function(data){ // data.x and data.y are in px
+        socket.on('click',function(data){ // a player wished to move ; data.x and data.y are in px
             // Update player position and if it's ok, notify everybody of the change in coordinates
             if(gameServer.movePlayer(socket.player,data.x,data.y)) io.emit('move',socket.player);
         });
 
-        socket.on('block',function(data){ // drop a block ; data.x and data.y are cell coordinates, not px
-            if(gameServer.dropBlock(socket.player,data.x,data.y)) io.emit('block',{x:data.x,y:data.y}); // notify everyone of new block in case of success
+        socket.on('block',function(){ // a player wishes to drop a block
+            var cell = gameServer.computeCellCoordinates(socket.player.x,socket.player.y);
+            BlocksManager.addBlock(cell.x,cell.y);
         });
 
         socket.on('disconnect',function(){
@@ -83,7 +78,7 @@ gameServer.generateInitPacket = function(id){ // Generate an object with a few i
         cellWidth: gameServer.cellWidth,
         cellHeight: gameServer.cellHeight,
         players: gameServer.getAllPlayers(),
-        blocks: gameServer.blocks.toList(),
+        blocks: BlocksManager.listBlocks(),
         ownID: id,
         nbConnected: gameServer.getNbConnected()
   };
@@ -124,7 +119,7 @@ gameServer.checkObstacles = function(startx,starty,endx,endy){ // coordinates in
         tmpy += speedY*chunkLength;
         var cell = gameServer.computeCellCoordinates(tmpx,tmpy);
         if(cell.x == startCell.x && cell.y == startCell.y) continue; // ignore obstacles on starting cell
-        if(gameServer.isBlockAt(cell.x,cell.y)) { // If obstacle, step back and return
+        if(BlocksManager.isBlockAt(cell.x,cell.y)) { // If obstacle, step back and return
             return {
                 x: tmpx - speedX*chunkLength,
                 y: tmpy - speedY*chunkLength
@@ -144,25 +139,6 @@ gameServer.computeAngle = function(x1,y1,x2,y2){ // return angle between points,
 
 gameServer.euclideanDistance = function(x1,y1,x2,y2){
     return Math.sqrt(Math.pow(x1-x2,2)+Math.pow(y1-y2,2));
-};
-
-gameServer.dropBlock = function(player,x,y){ // return true for success, false otherwise
-    var cellCoordinates = gameServer.computeCellCoordinates(player.x,player.y);
-    if(cellCoordinates.x != x || cellCoordinates.y != y ) return false; // the player cannot drop a block on a different cell than his
-    if(gameServer.isBlockAt(x,y)) return false; // cannot put a block if there is one already
-    gameServer.blocks.add(x,y,1);
-    var blockDoc = {
-        x: x,
-        y: y,
-        value: 1 //  x,y,value format used by SpaceMap to (de)serialize to/from lists
-    };
-    server.db.collection('blocks').insertOne(blockDoc,function(err){if(err) throw err;});
-    return true;
-};
-
-// returns true if there is a block on the given cell
-gameServer.isBlockAt = function(x,y){  // x and y in cell coordinates, not px
-    return gameServer.blocks.get(x,y) == 1;
 };
 
 gameServer.clamp = function(x,min,max){ // restricts a value to a given interval (return the value unchanged if within the interval

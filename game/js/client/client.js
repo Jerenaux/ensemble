@@ -15,8 +15,8 @@ Client.sendMovement = function(x,y){
   Client.socket.emit('click',{x:x,y:y}); // notify the server of a movement
 };
 
-Client.sendBlock = function(x,y){
-    Client.socket.emit('block',{x:x,y:y}); // notify the server of a new block
+Client.sendBlock = function(){
+    Client.socket.emit('block'); // notify the server of a new block
 };
 
 // Getting stuff from server
