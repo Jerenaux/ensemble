@@ -39,6 +39,10 @@ Client.socket.on('block',function(data){ // the client is notified of a new bloc
     Game.addBlock(data.x,data.y);
 });
 
+Client.socket.on('removeBlock',function(data){ // the client is notified of a block being removed
+    Game.removeBlock(data.x,data.y);
+});
+
 Client.socket.on('remove',function(data){ // the client is  notified that a player has left
     Game.removePlayer(data.id);
     Game.updateNbConnected(data.nbConnected);

@@ -56,7 +56,8 @@ gameServer.getAllPlayers = function(){ // Iterate over the connected clients to 
 
 gameServer.generatePlayer = function(){ // Create a new player object
     var startingPosition = gameServer.getStartingPosition();
-    //gameServer.makeRoom(startingPosition); // Ensure the player doesn't start on an occupied cell or surrounded by obstacles
+    var cell = gameServer.computeCellCoordinates(startingPosition.x,startingPosition.y);
+    BlocksManager.makeRoom(cell.x,cell.y); // Ensure the player doesn't start on an occupied cell or surrounded by obstacles
     return {
         id: gameServer.lastPlayerID++,
         x: startingPosition.x,

@@ -18,7 +18,7 @@ var Game = {
     ownPlayerID: -1, // identifier of the sprite of the player (the green one)
     ownSprite: null, // reference to the sprite of the player (the green one)
     allowAction : true, // set to false when panels are displayed,
-    blocks: new SpaceMap(), // spaceMap storing true of false if a block is at given coordinates, e.g. isThereABlock = blocks[x][y];
+    blocks: new SpaceMap(), // spaceMap storing the blocks according to theur coordinates
     initialized: false
 };
 
@@ -165,8 +165,14 @@ Game.movePlayer = function(id,x,y){
 };
 
 Game.addBlock = function(x,y){
-    Game.blocksGroup.add(game.add.sprite(x*Game.cellWidth,y*Game.cellHeight,'block')); // drop a block of random color
-    Game.blocks.add(x,y,true);
+    var block = Game.blocksGroup.add(game.add.sprite(x*Game.cellWidth,y*Game.cellHeight,'block')); // drop a block of random color
+    Game.blocks.add(x,y,block);
+};
+
+Game.removeBlock = function(x,y){
+    var block = Game.blocks.get(x,y);
+    block.destroy();
+    Game.blocks.delete(x,y);
 };
 
 Game.removePlayer = function(id){
@@ -252,5 +258,5 @@ Game.computeCellCoordinates = function(x,y){ // return the coordinates of the ce
 
 // returns true if there is a block on the given cell
 Game.isBlockAt = function(x,y){  // x and y in cell coordinates, not px
-    return Game.blocks.get(x,y) == true;
+    return (Game.blocks.get(x,y) !== undefined);
 };
