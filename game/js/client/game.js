@@ -177,7 +177,7 @@ Game.addBlock = function(x,y){
 Game.removeBlock = function(x,y){
     if(!Game.initialized) return;
     var block = Game.blocks.get(x,y);
-    block.destroy();
+    if(block) block.destroy();
     Game.blocks.delete(x,y);
 };
 
