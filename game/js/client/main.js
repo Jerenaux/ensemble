@@ -5,7 +5,7 @@ game.state.add('Game',Game);
 game.state.start('Game');
 
 function manageFormFocus(){
-    console.log($('input[type=text], textarea').length+' matching elements');
+    //console.log($('input[type=text], textarea').length+' matching elements');
     $('input[type=text], textarea').focus(function(){Game.toggleGameControls(false);});
     $('input[type=text], textarea').blur(function(){Game.toggleGameControls(true);});
 }

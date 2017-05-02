@@ -99,17 +99,17 @@ app.controller('FeaturesCtrl',[
 app.filter('getDelay',function(){
     return function(stamp){
         var diff = (Date.now() - stamp) / 1000;
-        if(diff < 60) return Math.round(diff)+' second'+(Math.round(diff) > 1 ? 's' : '');
+        if(diff < 60) return Math.round(diff)+' second'+(Math.round(diff) != 1 ? 's' : '');
         diff /= 60;
-        if(diff < 60) return Math.round(diff)+' minute'+(Math.round(diff) > 1 ? 's' : '');
+        if(diff < 60) return Math.round(diff)+' minute'+(Math.round(diff) != 1 ? 's' : '');
         diff /= 60;
-        if(diff < 24) return Math.round(diff)+' hour'+(Math.round(diff) > 1 ? 's' : '');
+        if(diff < 24) return Math.round(diff)+' hour'+(Math.round(diff) != 1 ? 's' : '');
         diff /= 24;
-        if(diff < 7) return Math.round(diff)+' day'+(Math.round(diff) > 1 ? 's' : '');;
+        if(diff < 7) return Math.round(diff)+' day'+(Math.round(diff) != 1 ? 's' : '');;
         diff /= 7;
-        if(diff < 4) return Math.round(diff)+' week'+(Math.round(diff) > 1 ? 's' : '');;
+        if(diff < 4) return Math.round(diff)+' week'+(Math.round(diff) != 1 ? 's' : '');;
         diff /= 4;
-        return Math.round(diff)+' month'+(Math.round(diff) > 1 ? 's' : '');
+        return Math.round(diff)+' month'+(Math.round(diff) != 1 ? 's' : '');
     }
 });
 

@@ -41,17 +41,3 @@ app.factory('postWatcher',function(){
         }
     }
 });
-
-/*app.factory('formFocusWatcher',function(){
-    return {
-        changeState : function(){
-            this.posted = !this.posted;
-        }
-    }
-});*/
-
-function test(){
-    console.log('testy');
-}
-
-
