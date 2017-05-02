@@ -15,5 +15,5 @@ $(document).ready(function()
     setTimeout(function(){
         $('[data-toggle="popover"]').popover();
         manageFormFocus();
-    },1500);
+    },2000);
 });
