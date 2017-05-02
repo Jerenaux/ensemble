@@ -165,12 +165,12 @@ Game.movePlayer = function(id,x,y){
     // The following tweens a sprite linearly from its current position to the received (x,y) coordinates
     player.tween = game.add.tween(player);
     var duration = distance*Game.spriteSpeed;
-    player.tween.to({x:x,y:y}, duration);
+    player.tween.to({x:x,y:y}, duration,Phaser.Easing.Linear.None);
     player.tween.start();
 };
 
 Game.addBlock = function(x,y){
-    var block = Game.blocksGroup.add(game.add.sprite(x*Game.cellWidth,y*Game.cellHeight,'block')); // drop a block of random color
+    var block = Game.blocksGroup.add(new Block(x*Game.cellWidth,y*Game.cellHeight));
     Game.blocks.add(x,y,block);
 };
 
