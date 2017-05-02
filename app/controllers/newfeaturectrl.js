@@ -32,6 +32,10 @@ app.controller('NewFeatureCtrl',[
         $scope.removeAlert = function(){
             $scope.submitted = false;
             $scope.$apply();
-        }
+        };
+
+        $scope.toggleGameControls = function(state){
+            Game.toggleGameControls(state);
+        };
     }
 ]);

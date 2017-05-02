@@ -63,7 +63,7 @@ Game.create = function(){
     Game.spritesGroup = game.add.group(); // Rendering group for the player sprites
     Game.UIGroup = game.add.group(); // Rendering group for user interface-related things (such as info panel, ...)
 
-    Client.start();
+    Client.start();;
 };
 
 Game.initializeGame = function(ownID,worldW,worldH,cellW,cellH,players,blocks){
@@ -119,18 +119,23 @@ Game.registerControls = function(){
     // Allow clicks on the background
     Game.bg.inputEnabled = true;
     Game.bg.events.onInputDown.add(Game.handleClick,this);
-    // register the space bar to drop blocks
+    // register the enter key to drop blocks
     game.input.keyboard.addKey(Phaser.Keyboard.ENTER).onDown.add(Game.dropBlock, this);
     // register the arrows (the associated logic takes place Game.update())
     Game.arrows = game.input.keyboard.createCursorKeys();
     // register WASD key (regardless of actual keyboard layout) (the associated logic takes place Game.update())
-    /*Game.WASD = {
+    Game.WASD = {
         up: game.input.keyboard.addKey(Phaser.Keyboard.W),
         down: game.input.keyboard.addKey(Phaser.Keyboard.S),
         left: game.input.keyboard.addKey(Phaser.Keyboard.A),
         right: game.input.keyboard.addKey(Phaser.Keyboard.D)
-    };*/
-    // Note: if you register the spacebar at some point, don't forget to use addKeyCapture()
+    };
+    // Note: if you register the spacebar at some point, don't forget to use addKeyCapture(), but this will conflict with typing in the submission forms!
+};
+
+// enable/disable key captures when the submission forms of the app (comments, features) lose/gain focus
+Game.toggleGameControls = function(state){
+    game.input.keyboard.enabled = state;
 };
 
 Game.handleClick = function(){
@@ -199,19 +204,19 @@ Game.updateNbConnected = function(nb){
 };
 
 Game.isUpPressed = function(){
-    return (Game.arrows.up.isDown);
+    return (Game.arrows.up.isDown || Game.WASD.up.isDown);
 };
 
 Game.isDownPressed = function(){
-    return (Game.arrows.down.isDown);
+    return (Game.arrows.down.isDown || Game.WASD.down.isDown);
 };
 
 Game.isRightPressed = function(){
-    return (Game.arrows.right.isDown);
+    return (Game.arrows.right.isDown || Game.WASD.right.isDown);
 };
 
 Game.isLeftPressed = function(){
-    return (Game.arrows.left.isDown);
+    return (Game.arrows.left.isDown || Game.WASD.left.isDown);
 };
 
 Game.update = function() {
