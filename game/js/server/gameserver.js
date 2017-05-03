@@ -1,5 +1,6 @@
 var io = require('../../../server.js').io;
 var math = require('mathjs');
+var shared = require('../shared/shared.js');
 
 gameServer = {
     lastPlayerID : 0,
@@ -32,7 +33,7 @@ io.on('connection',function(socket){
         });
 
         socket.on('block',function(){ // a player wishes to drop a block
-            var cell = gameServer.computeCellCoordinates(socket.player.x,socket.player.y);
+            var cell = shared.computeCellCoordinates(socket.player.x,socket.player.y);
             BlocksManager.addBlock(cell.x,cell.y);
         });
 
@@ -56,7 +57,7 @@ gameServer.getAllPlayers = function(){ // Iterate over the connected clients to 
 
 gameServer.generatePlayer = function(){ // Create a new player object
     var startingPosition = gameServer.getStartingPosition();
-    var cell = gameServer.computeCellCoordinates(startingPosition.x,startingPosition.y);
+    var cell = shared.computeCellCoordinates(startingPosition.x,startingPosition.y);
     BlocksManager.makeRoom(cell.x,cell.y); // Ensure the player doesn't start on an occupied cell or surrounded by obstacles
     return {
         id: gameServer.lastPlayerID++,
@@ -95,7 +96,7 @@ gameServer.clamp = function(x,min,max){ // restricts a value to a given interval
     return Math.max(min, Math.min(x, max));
 };
 
-gameServer.computeCellCoordinates = function(x,y){ // return the coordinates of the cell corresponding of a pair of raw coordinates
+shared.computeCellCoordinates = function(x,y){ // return the coordinates of the cell corresponding of a pair of raw coordinates
     return {
         x: Math.floor(x/gameServer.cellWidth),
         y: Math.floor(y/gameServer.cellHeight)
@@ -108,5 +109,5 @@ gameServer.getNbConnected = function(){
 
 module.exports.gameServer = gameServer;
 
-var BlocksManager = require('./BlocksManager.js').BlocksManager;
-var MovementManager = require('./MovementManager.js').MovementManager;
+var BlocksManager = require('./../shared/BlocksManager.js').BlocksManager;
+var MovementManager = require('./../shared/MovementManager.js').MovementManager;

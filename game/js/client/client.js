@@ -41,11 +41,11 @@ Client.socket.on('move',function(data){ // the client is notified of another pla
 });
 
 Client.socket.on('block',function(data){ // the client is notified of a new block
-    Game.addBlock(data.x,data.y);
+    BlocksManager.addBlock(data.x,data.y);
 });
 
 Client.socket.on('removeBlock',function(data){ // the client is notified of a block being removed
-    Game.removeBlock(data.x,data.y);
+    BlocksManager.removeBlock(data.x,data.y);
 });
 
 Client.socket.on('remove',function(data){ // the client is  notified that a player has left

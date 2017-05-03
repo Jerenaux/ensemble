@@ -63,7 +63,7 @@ Game.create = function(){
     Game.spritesGroup = game.add.group(); // Rendering group for the player sprites
     Game.UIGroup = game.add.group(); // Rendering group for user interface-related things (such as info panel, ...)
 
-    Client.start();;
+    Client.start();
 };
 
 Game.initializeGame = function(ownID,worldW,worldH,cellW,cellH,players,blocks){
@@ -82,8 +82,7 @@ Game.initializeGame = function(ownID,worldW,worldH,cellW,cellH,players,blocks){
     }
 
     for(var j = 0; j < blocks.length; j++){
-        Game.addBlock(blocks[j].x,blocks[j].y);
-        Game.blocks.add(blocks[j].x,blocks[j].y,true);
+        BlocksManager.addBlock(blocks[j].x, blocks[j].y);
     }
 
     Game.createInfoPanel(500,250); // Display the "how to play" instructions panel ; arguments are width and height
@@ -120,7 +119,7 @@ Game.registerControls = function(){
     Game.bg.inputEnabled = true;
     Game.bg.events.onInputDown.add(Game.handleClick,this);
     // register the enter key to drop blocks
-    game.input.keyboard.addKey(Phaser.Keyboard.ENTER).onDown.add(Game.dropBlock, this);
+    game.input.keyboard.addKey(Phaser.Keyboard.ENTER).onDown.add(BlocksManager.dropBlock, this);
     // register the arrows (the associated logic takes place Game.update())
     Game.arrows = game.input.keyboard.createCursorKeys();
     // register WASD key (regardless of actual keyboard layout) (the associated logic takes place Game.update())
@@ -149,14 +148,6 @@ Game.canMoveAgain = function(){ // check if enough time has elapsed to allow a n
     return true;
 };
 
-Game.dropBlock = function(){ // check if a block can be dropped at this position, and if yes inform the server
-    if(!Game.allowAction) return;
-    // compute the coordinates of the current cell
-    var cell = Game.computeCellCoordinates(Game.ownSprite.x,Game.ownSprite.y);
-    if(Game.isBlockAt(cell.x,cell.y)) return; // don't drop a block if there is one already
-    Client.sendBlock();
-};
-
 Game.movePlayer = function(id,x,y){
     if(!Game.initialized) return;
     var player = Game.players[id];
@@ -167,18 +158,6 @@ Game.movePlayer = function(id,x,y){
     var duration = distance*Game.spriteSpeed;
     player.tween.to({x:x,y:y}, duration,Phaser.Easing.Linear.None);
     player.tween.start();
-};
-
-Game.addBlock = function(x,y){
-    var block = Game.blocksGroup.add(new Block(x*Game.cellWidth,y*Game.cellHeight));
-    Game.blocks.add(x,y,block);
-};
-
-Game.removeBlock = function(x,y){
-    if(!Game.initialized) return;
-    var block = Game.blocks.get(x,y);
-    if(block) block.destroy();
-    Game.blocks.delete(x,y);
 };
 
 Game.removePlayer = function(id){
@@ -253,13 +232,6 @@ Game.computeMovement = function(angle){ // compute the new coordinates of the pl
     var newX = Game.ownSprite.position.x + Math.cos(angle)*Game.cellWidth;
     var newY = Game.ownSprite.position.y + -Math.sin(angle)*Game.cellHeight;
     Client.sendMovement(newX,newY);
-};
-
-Game.computeCellCoordinates = function(x,y){ // return the coordinates of the cell corresponding of a pair of raw coordinates
-    return {
-        x: Math.floor(x/Game.cellWidth),
-        y: Math.floor(y/Game.cellHeight)
-    };
 };
 
 // returns true if there is a block on the given cell

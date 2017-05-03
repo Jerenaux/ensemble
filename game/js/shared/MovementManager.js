@@ -1,16 +1,19 @@
 /**
  * Created by Jerome on 01-05-17.
  */
+var onServer = (typeof window === 'undefined');
 
-var math = require('mathjs');
-var io = require('../../../server.js').io; // socket.io object
-var gameServer = require('./gameserver.js').gameServer;
-var BlocksManager = require('./BlocksManager.js').BlocksManager;
+if(onServer) {
+    var io = require('../../../server.js').io; // socket.io object
+    var shared = require('../shared/shared.js');
+    var BlocksManager = require('./BlocksManager.js').BlocksManager;
+}
 
 // Object responsible for handling the movements of all players (checking for obstacles, broadcasting ...), be it by click or key press
 MovementManager = {};
 
 MovementManager.movePlayer = function(player,x,y){ // Coordinates are in px
+    if(!onServer) return;
     // check for obstacles on the path and return the furthest reachable position
     var endPosition = MovementManager.checkObstacles({
         x:player.x, // start
@@ -25,6 +28,7 @@ MovementManager.movePlayer = function(player,x,y){ // Coordinates are in px
 };
 
 MovementManager.emitMove = function(player){
+    if(!onServer) return;
     io.emit('move',player);
 };
 
@@ -33,7 +37,7 @@ MovementManager.checkObstacles = function(start,end){ // coordinates in px
     // It does so by splitting the path in chunks of 20 pixels, and check if the corresponding cell has a block or not.
     // If yes, returns the end coordinates in case of "hitting" the obstacle; if no, return the intended end coordinates.
     var chunkLength = 20; // The smaller, the more precise the algorithm, but 20 seems to do a good job (for a cell size of 40)
-    var startCell = gameServer.computeCellCoordinates(start.x,start.y);
+    var startCell = shared.computeCellCoordinates(start.x,start.y);
     var speed = MovementManager.computeSpeed(MovementManager.computeAngle(start,end));
     var distance = MovementManager.euclideanDistance(start,end);
     // Split the path in chunks
@@ -45,7 +49,7 @@ MovementManager.checkObstacles = function(start,end){ // coordinates in px
     for(var i = 0; i < nbChunks; i++){
         tmp.x += speed.x*chunkLength;
         tmp.y += speed.y*chunkLength;
-        var cell = gameServer.computeCellCoordinates(tmp.x,tmp.y);
+        var cell = shared.computeCellCoordinates(tmp.x,tmp.y);
         if(cell.x == startCell.x && cell.y == startCell.y) continue; // ignore obstacles on starting cell
         if(BlocksManager.isBlockAt(cell.x,cell.y)) { // If obstacle, step back and return
             return {
@@ -60,7 +64,7 @@ MovementManager.checkObstacles = function(start,end){ // coordinates in px
 
 
 MovementManager.computeAngle = function(a,b){ // return angle between points a and b, in radians
-    return -(math.atan2(b.y- a.y, b.x- a.x)); //*(180/Math.PI));
+    return -(Math.atan2(b.y- a.y, b.x- a.x)); //*(180/Math.PI));
 };
 
 MovementManager.computeSpeed = function(angle){ // return unit speed vector given an angle
@@ -74,4 +78,4 @@ MovementManager.euclideanDistance = function(a,b){ // return Euclidean distance 
     return Math.sqrt(Math.pow(a.x- b.x,2)+Math.pow(a.y- b.y,2));
 };
 
-module.exports.MovementManager = MovementManager;
+if(onServer) module.exports.MovementManager = MovementManager;
