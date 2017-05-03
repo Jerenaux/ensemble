@@ -2,7 +2,9 @@
  * Created by Jerome on 10-04-17.
  */
 
-var Client = {};
+var Client = {
+    movementHistory: [] // keep track of the 'move' events sent to the server
+};
 Client.socket = io.connect();
 
 // Sending stuff to server
@@ -12,7 +14,10 @@ Client.start = function(){
 };
 
 Client.sendMovement = function(x,y){
-  Client.socket.emit('move',{x:x,y:y}); // notify the server of a movement
+    var data = {x:x,y:y};
+    Client.movementHistory.push({x:x,y:y});
+    if(Client.movementHistory.length > 10) Client.movementHistory.shift(); // Keep only the last 10 records
+    Client.socket.emit('move',data); // notify the server of a movement
 };
 
 Client.sendBlock = function(){
