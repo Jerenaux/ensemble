@@ -13,13 +13,10 @@ var Game = {
     spriteSpeed : 1, // "speed" at which the player sprites will travel, in msec/px
     cellWidth: null, // dimensions of the cells of the grid (received from server and set in Game.initializeGame())
     cellHeight: null,
-    lastMove : 0, // timestamp of the last time the player moved
-    moveDelay: 100, //ms before allowing a new movement
     ownPlayerID: -1, // identifier of the sprite of the player (the green one)
     ownSprite: null, // reference to the sprite of the player (the green one)
-    allowAction : true, // set to false when panels are displayed,
-    blocks: new SpaceMap(), // spaceMap storing the blocks according to theur coordinates
-    initialized: false
+    initialized: false,
+    allowAction : true, // allows to move or drop blocks ; set to false when panels are displayed
 };
 
 /**
@@ -138,26 +135,7 @@ Game.toggleGameControls = function(state){
 };
 
 Game.handleClick = function(){
-    if(!Game.allowAction) return;
-    if(Game.canMoveAgain()) Client.sendMovement(game.input.worldX,game.input.worldY);
-};
-
-Game.canMoveAgain = function(){ // check if enough time has elapsed to allow a new movement
-    if(Date.now() - Game.lastMove < Game.moveDelay) return false; // prevent rapid firing
-    Game.lastMove = Date.now();
-    return true;
-};
-
-Game.movePlayer = function(id,x,y){
-    if(!Game.initialized) return;
-    var player = Game.players[id];
-    if(player.tween) player.tween.stop();
-    var distance = Phaser.Math.distance(player.x,player.y,x,y);
-    // The following tweens a sprite linearly from its current position to the received (x,y) coordinates
-    player.tween = game.add.tween(player);
-    var duration = distance*Game.spriteSpeed;
-    player.tween.to({x:x,y:y}, duration,Phaser.Easing.Linear.None);
-    player.tween.start();
+    if(Game.allowAction) MovementManager.moveClientAt(game.input.worldX,game.input.worldY);
 };
 
 Game.removePlayer = function(id){
@@ -200,7 +178,7 @@ Game.isLeftPressed = function(){
 
 Game.update = function() {
     if(!Game.initialized) return;
-    if(Game.allowAction) Game.computeMovement(Game.computeAngle());
+    if(Game.allowAction) MovementManager.computeMovement(Game.computeAngle());
 };
 
 Game.computeAngle = function(){ // compute direction based on pressed directional keys
@@ -223,19 +201,4 @@ Game.computeAngle = function(){ // compute direction based on pressed directiona
         angle = 45;
     }
     return angle;
-};
-
-Game.computeMovement = function(angle){ // compute the new coordinates of the player when moving in a certain direction
-    if(angle == null) return;
-    if(!Game.canMoveAgain()) return;
-    angle *= (Math.PI/180);
-    var newX = Game.ownSprite.position.x + Math.cos(angle)*Game.cellWidth;
-    var newY = Game.ownSprite.position.y + -Math.sin(angle)*Game.cellHeight;
-    Client.sendMovement(newX,newY);
-};
-
-// returns true if there is a block on the given cell
-Game.isBlockAt = function(x,y){  // x and y in cell coordinates, not px
-    var block = Game.blocks.get(x,y);
-    return (block !== undefined && block !== null);
 };

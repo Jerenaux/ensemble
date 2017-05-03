@@ -37,7 +37,7 @@ Client.socket.on('init',function(data){ // the client receives the data to initi
 });
 
 Client.socket.on('move',function(data){ // the client is notified of another player moving
-    Game.movePlayer(data.id,data.x,data.y);
+    MovementManager.tweenPlayer(data.id,data.x,data.y);
 });
 
 Client.socket.on('block',function(data){ // the client is notified of a new block

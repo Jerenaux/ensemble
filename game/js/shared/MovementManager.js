@@ -10,9 +10,48 @@ if(onServer) {
 }
 
 // Object responsible for handling the movements of all players (checking for obstacles, broadcasting ...), be it by click or key press
-MovementManager = {};
+MovementManager = {
+    lastMove : 0, // timestamp of the last time the player moved (client-side use only)
+    moveDelay: 100 //ms before allowing a new movement (client-side use only)
+};
 
-MovementManager.movePlayer = function(player,x,y){ // Coordinates are in px
+MovementManager.canMoveAgain = function(){ // check if enough time has elapsed to allow a new movement, to prevent rapid firing
+    if(onServer) return;
+    if(Date.now() - MovementManager.lastMove < MovementManager.moveDelay) return false;
+    MovementManager.lastMove = Date.now();
+    return true;
+};
+
+MovementManager.moveClientAt = function(x,y){ // Handles a change of coordinates on the client side ; coordinates in px
+    if(onServer) return;
+    if(!Game.allowAction) return;
+    if(MovementManager.canMoveAgain()) Client.sendMovement(x,y);
+};
+
+MovementManager.tweenPlayer = function(id,x,y){ // Handles the visual aspects of player movement
+    if(onServer) return;
+    if(!Game.initialized) return;
+    var player = Game.players[id];
+    if(player.tween) player.tween.stop();
+    var distance = Phaser.Math.distance(player.x,player.y,x,y);
+    // The following tweens a sprite linearly from its current position to the received (x,y) coordinates
+    player.tween = game.add.tween(player);
+    var duration = distance*Game.spriteSpeed;
+    player.tween.to({x:x,y:y}, duration,Phaser.Easing.Linear.None);
+    player.tween.start();
+};
+
+MovementManager.computeMovement = function(angle){ // compute the new coordinates of the player when moving in a certain direction using keyboard
+    if(onServer) return;
+    if(angle == null) return;
+    if(!MovementManager.canMoveAgain()) return;
+    angle *= (Math.PI/180);
+    var newX = Game.ownSprite.position.x + Math.cos(angle)*Game.cellWidth;
+    var newY = Game.ownSprite.position.y + -Math.sin(angle)*Game.cellHeight;
+    Client.sendMovement(newX,newY);
+};
+
+MovementManager.movePlayer = function(player,x,y){ // update the coordinates of a player on the server side ; coordinates are in px
     if(!onServer) return;
     // check for obstacles on the path and return the furthest reachable position
     var endPosition = MovementManager.checkObstacles({

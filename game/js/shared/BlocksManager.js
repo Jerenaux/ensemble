@@ -12,7 +12,7 @@ if(onServer) {
 
 // Object responsible for managing the addition and removal of blocks, and keeping the clients and database up to date
 BlocksManager = {
-    blocks: new SpaceMap() // spaceMap storing `blockValue` if a block is at given coordinates, e.g. isThereABlock = blocks[x][y];
+    blocks: new SpaceMap() // spaceMap storing the block object located at given coordinates, e.g. blockObject = blocks[x][y]; (the block object is a Block() on the client, an empty object {} on the server)
 };
 
 BlocksManager.getBlocksFromDB = function(){
