@@ -45,8 +45,10 @@ BlocksManager.addBlock = function(x,y){ // return true for success, false otherw
 BlocksManager.dropBlock = function(){
     if(!Game.allowAction) return;
     // compute the coordinates of the current cell
-    var cell = computeCellCoordinates(Game.ownSprite.x,Game.ownSprite.y);
+    var cell = shared.computeCellCoordinates(Game.ownSprite.x,Game.ownSprite.y);
     if(BlocksManager.isBlockAt(cell.x,cell.y)) return; // don't drop a block if there is one already
+    // Drop block immediately for responsiveness
+    BlocksManager.addBlock(cell.x,cell.y);
     Client.sendBlock();
 };
 

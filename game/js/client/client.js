@@ -65,6 +65,7 @@ Client.socket.on('block',function(data){ // the client is notified of a new bloc
 });
 
 Client.socket.on('removeBlock',function(data){ // the client is notified of a block being removed
+    console.log('remove block');
     BlocksManager.removeBlock(data.x,data.y);
 });
 

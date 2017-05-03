@@ -35,6 +35,9 @@ io.on('connection',function(socket){
         socket.on('block',function(){ // a player wishes to drop a block
             var cell = shared.computeCellCoordinates(socket.player.x,socket.player.y);
             BlocksManager.addBlock(cell.x,cell.y);
+            // If there is no block on that cell after calling addBlock(), it means the drop was refused for some reason,
+            // but since it was already executed on the client, it has to be reversed
+            if(!BlocksManager.isBlockAt(cell.x,cell.y)) socket.emit('removeBlock',{x:cell.x,y:cell.y});
         });
 
         socket.on('disconnect',function(){
