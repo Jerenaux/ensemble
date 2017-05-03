@@ -87,6 +87,7 @@ Game.initializeGame = function(ownID,worldW,worldH,cellW,cellH,players,blocks){
 
     Game.registerControls(); // declares in one single place all the actions available to the players
     Game.initialized = true;
+    Client.emptyQueue(); // execute buffered server messages
 };
 
 Game.createBackground = function(width,height){
@@ -114,7 +115,7 @@ Game.createInfoPanel = function(width,height){
 Game.registerControls = function(){
     // Allow clicks on the background
     Game.bg.inputEnabled = true;
-    Game.bg.events.onInputDown.add(Game.handleClick,this);
+    Game.bg.events.onInputDown.add(MovementManager.moveAtClick,this);
     // register the enter key to drop blocks
     game.input.keyboard.addKey(Phaser.Keyboard.ENTER).onDown.add(BlocksManager.dropBlock, this);
     // register the arrows (the associated logic takes place Game.update())
@@ -132,10 +133,6 @@ Game.registerControls = function(){
 // enable/disable key captures when the submission forms of the app (comments, features) lose/gain focus
 Game.toggleGameControls = function(state){
     game.input.keyboard.enabled = state;
-};
-
-Game.handleClick = function(){
-    if(Game.allowAction) MovementManager.moveClientAt(game.input.worldX,game.input.worldY);
 };
 
 Game.removePlayer = function(id){
@@ -178,10 +175,10 @@ Game.isLeftPressed = function(){
 
 Game.update = function() {
     if(!Game.initialized) return;
-    if(Game.allowAction) MovementManager.computeMovement(Game.computeAngle());
+    if(Game.allowAction) MovementManager.moveByKeys(Game.computeKeysAngle());
 };
 
-Game.computeAngle = function(){ // compute direction based on pressed directional keys
+Game.computeKeysAngle = function(){ // compute direction based on pressed directional keys
     var angle = null;
     if (Game.isUpPressed() && !Game.isRightPressed() && !Game.isLeftPressed()) { // go up
         angle = 90;

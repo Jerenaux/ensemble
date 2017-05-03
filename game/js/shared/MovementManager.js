@@ -5,7 +5,7 @@ var onServer = (typeof window === 'undefined');
 
 if(onServer) {
     var io = require('../../../server.js').io; // socket.io object
-    var shared = require('../shared/shared.js');
+    var shared = require('./shared.js').shared;
     var BlocksManager = require('./BlocksManager.js').BlocksManager;
 }
 
@@ -22,12 +22,6 @@ MovementManager.canMoveAgain = function(){ // check if enough time has elapsed t
     return true;
 };
 
-MovementManager.moveClientAt = function(x,y){ // Handles a change of coordinates on the client side ; coordinates in px
-    if(onServer) return;
-    if(!Game.allowAction) return;
-    if(MovementManager.canMoveAgain()) Client.sendMovement(x,y);
-};
-
 MovementManager.tweenPlayer = function(id,x,y){ // Handles the visual aspects of player movement
     if(onServer) return;
     if(!Game.initialized) return;
@@ -41,17 +35,8 @@ MovementManager.tweenPlayer = function(id,x,y){ // Handles the visual aspects of
     player.tween.start();
 };
 
-MovementManager.computeMovement = function(angle){ // compute the new coordinates of the player when moving in a certain direction using keyboard
-    if(onServer) return;
-    if(angle == null) return;
-    if(!MovementManager.canMoveAgain()) return;
-    angle *= (Math.PI/180);
-    var newX = Game.ownSprite.position.x + Math.cos(angle)*Game.cellWidth;
-    var newY = Game.ownSprite.position.y + -Math.sin(angle)*Game.cellHeight;
-    Client.sendMovement(newX,newY);
-};
-
-MovementManager.movePlayer = function(player,x,y){ // update the coordinates of a player on the server side ; coordinates are in px
+// checks the new coordinates received from a client, and update the server-side representation
+MovementManager.movePlayer = function(player,x,y){
     if(!onServer) return;
     // check for obstacles on the path and return the furthest reachable position
     var endPosition = MovementManager.checkObstacles({
@@ -63,12 +48,51 @@ MovementManager.movePlayer = function(player,x,y){ // update the coordinates of 
     });
     player.x = endPosition.x;
     player.y = endPosition.y;
+    //console.log('server end : '+endPosition.x+', '+endPosition.y);
     MovementManager.emitMove(player);
 };
 
 MovementManager.emitMove = function(player){
     if(!onServer) return;
     io.emit('move',player);
+};
+
+MovementManager.moveAtClick = function(){ // Performs movement following a click
+    if(onServer) return;
+    if(!Game.allowAction) return;
+    if(!MovementManager.canMoveAgain()) return;
+    var start = {
+        x: Game.ownSprite.position.x,
+        y: Game.ownSprite.position.y
+    };
+    var end = {
+        x:  game.input.worldX,
+        y: game.input.worldY
+    };
+    var endPosition = MovementManager.checkObstacles(start,end);
+    // Initiate the movement directly to make game more responsive
+    MovementManager.tweenPlayer(Game.ownPlayerID,endPosition.x,endPosition.y);
+    Client.sendMovement(endPosition.x,endPosition.y); // coordinates in px
+};
+
+// Performs keyboard-based movement ; angle is computed based on the combination of pressed keys
+MovementManager.moveByKeys = function(angle){
+    if(onServer) return;
+    if(angle == null) return;
+    if(!MovementManager.canMoveAgain()) return;
+    angle *= (Math.PI/180);
+    var start = {
+        x: Game.ownSprite.position.x,
+        y: Game.ownSprite.position.y
+    };
+    var end = {
+        x : Game.ownSprite.position.x + Math.cos(angle)*Game.cellWidth,
+        y : Game.ownSprite.position.y + -Math.sin(angle)*Game.cellHeight
+    };
+    var endPosition = MovementManager.checkObstacles(start,end);
+    // Initiate the movement directly to make game more responsive
+    MovementManager.tweenPlayer(Game.ownPlayerID,endPosition.x,endPosition.y);
+    Client.sendMovement(endPosition.x,endPosition.y);
 };
 
 MovementManager.checkObstacles = function(start,end){ // coordinates in px
@@ -100,7 +124,6 @@ MovementManager.checkObstacles = function(start,end){ // coordinates in px
     // No obstacle found, return intended end coordinates
     return end;
 };
-
 
 MovementManager.computeAngle = function(a,b){ // return angle between points a and b, in radians
     return -(Math.atan2(b.y- a.y, b.x- a.x)); //*(180/Math.PI));

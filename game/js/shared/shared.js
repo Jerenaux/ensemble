@@ -4,11 +4,15 @@
 
 var onServer = (typeof window === 'undefined');
 
-function computeCellCoordinates(x,y){ // return the coordinates of the cell corresponding of a pair of raw coordinates
-    return {
-        x: Math.floor(x/Game.cellWidth),
-        y: Math.floor(y/Game.cellHeight)
-    };
-}
+var shared = {};
 
-if(onServer) module.exports.computeCellCoordinates = computeCellCoordinates;
+shared.computeCellCoordinates = function(x,y){ // return the coordinates of the cell corresponding of a pair of raw coordinates
+    var cellWidth = (onServer ? gameServer.cellWidth : Game.cellWidth);
+    var cellHeight = (onServer ? gameServer.cellHeight : Game.cellHeight);
+    return {
+        x: Math.floor(x/cellWidth),
+        y: Math.floor(y/cellHeight)
+    };
+};
+
+if(onServer) module.exports.shared = shared;
