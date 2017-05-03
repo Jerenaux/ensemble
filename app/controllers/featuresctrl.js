@@ -48,6 +48,11 @@ app.controller('FeaturesCtrl',[
             // Comments-related preprocessing
             f.showCommentForm = false;
             f.canComment = true;
+            $scope.updateArrows(f);
+            return f;
+        };
+
+        $scope.updateArrows = function(f){
             // Change arrows based on vote data
             var vote = $scope.getVote(f._id);
             if(vote == 1){
@@ -55,7 +60,6 @@ app.controller('FeaturesCtrl',[
             }else if(vote == -1){
                 f.downvoted = true;
             }
-            return f;
         };
 
         $scope.hasVoted = function(id){
