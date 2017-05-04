@@ -1,6 +1,6 @@
 var io = require('../../../server.js').io;
 var math = require('mathjs');
-var shared = require('../shared/shared.js');
+var shared = require('../shared/shared.js').shared;
 
 gameServer = {
     lastPlayerID : 0,
@@ -27,9 +27,7 @@ io.on('connection',function(socket){
         }); // notify the other players of the arrival of a new player
 
         socket.on('move',function(data){ // a player wished to move ; data.x and data.y are in px
-            //if(gameServer.movePlayer(socket.player,data.x,data.y)) io.emit('move',socket.player);
-            var destination = gameServer.sanitizeCoordinates(data.x,data.y); // check if coordinates are within world bounds
-            MovementManager.movePlayer(socket.player,destination.x,destination.y);
+            MovementManager.movePlayer(socket.player,data.x,data.y);
         });
 
         socket.on('block',function(){ // a player wishes to drop a block
@@ -87,23 +85,6 @@ gameServer.generateInitPacket = function(id){ // Generate an object with a few i
         ownID: id,
         nbConnected: gameServer.getNbConnected()
   };
-};
-gameServer.sanitizeCoordinates = function(x,y){ // ensure that a pair of coordinates is not out of bounds ; coordinates in px
-    return {
-        x: gameServer.clamp(x,gameServer.spriteWidth/2,gameServer.worldWidth-gameServer.spriteWidth),
-        y: gameServer.clamp(y,gameServer.spriteHeight/2,gameServer.worldHeight-gameServer.spriteHeight)
-    };
-};
-
-gameServer.clamp = function(x,min,max){ // restricts a value to a given interval (return the value unchanged if within the interval
-    return Math.max(min, Math.min(x, max));
-};
-
-shared.computeCellCoordinates = function(x,y){ // return the coordinates of the cell corresponding of a pair of raw coordinates
-    return {
-        x: Math.floor(x/gameServer.cellWidth),
-        y: Math.floor(y/gameServer.cellHeight)
-    };
 };
 
 gameServer.getNbConnected = function(){

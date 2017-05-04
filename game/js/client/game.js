@@ -16,7 +16,7 @@ var Game = {
     ownPlayerID: -1, // identifier of the sprite of the player (the green one)
     ownSprite: null, // reference to the sprite of the player (the green one)
     initialized: false,
-    allowAction : true, // allows to move or drop blocks ; set to false when panels are displayed
+    allowAction : true // allows to move or drop blocks ; set to false when panels are displayed
 };
 
 /**

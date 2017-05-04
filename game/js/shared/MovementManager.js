@@ -38,13 +38,14 @@ MovementManager.tweenPlayer = function(id,x,y){ // Handles the visual aspects of
 // checks the new coordinates received from a client, and update the server-side representation
 MovementManager.movePlayer = function(player,x,y){
     if(!onServer) return;
+    var destination = shared.sanitizeCoordinates(x,y); // check if coordinates are within world bounds
     // check for obstacles on the path and return the furthest reachable position
     var endPosition = MovementManager.checkObstacles({
         x:player.x, // start
         y:player.y
     }, {
-        x: x, // end
-        y: y
+        x: destination.x, // end
+        y: destination.y
     });
     player.x = endPosition.x;
     player.y = endPosition.y;
@@ -69,6 +70,7 @@ MovementManager.moveAtClick = function(){ // Performs movement following a click
         x:  game.input.worldX,
         y: game.input.worldY
     };
+    end = shared.sanitizeCoordinates(end.x,end.y);
     var endPosition = MovementManager.checkObstacles(start,end);
     // Initiate the movement directly to make game more responsive
     MovementManager.tweenPlayer(Game.ownPlayerID,endPosition.x,endPosition.y);
@@ -89,6 +91,7 @@ MovementManager.moveByKeys = function(angle){
         x : Game.ownSprite.position.x + Math.cos(angle)*Game.cellWidth,
         y : Game.ownSprite.position.y + -Math.sin(angle)*Game.cellHeight
     };
+    end = shared.sanitizeCoordinates(end.x,end.y);
     var endPosition = MovementManager.checkObstacles(start,end);
     // Initiate the movement directly to make game more responsive
     MovementManager.tweenPlayer(Game.ownPlayerID,endPosition.x,endPosition.y);
