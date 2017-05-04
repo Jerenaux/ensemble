@@ -11,15 +11,17 @@ and handles the interactions with the app.
 
 ### Game-related code
 
-All files related to the game itself are located in the `game` directory. `assets` contains the images, sounds, JSON files, etc. used in the game.
-`js` containts the source code, split into `client` and `server`-related code.
+All files related to the game itself are located in the `game` directory. `assets` contains the images, sounds, JSON files, etc. used in the game. `js` containts the source code, split into `client`-related code, `server`-related code and `shared` code, which is used by both the client and the server.
 
-For the client, `game.js` is where the main logic is located. This file often references the `Client` object, which is defined in `client.js`
-and acts as the interface between the game and the server (if you contribute, please put all interactions involving Socket.io in `client.js`).
-For the server, the main logic is located in `gameserver.js`.
+For the client, `game.js` is where the main logic is located. This file often references the `Client` object, which is defined in `client.js` and acts as the interface between the game and the server (if you contribute, please put all interactions involving Socket.io in `client.js`). For the server, the main logic is located in `gameserver.js`.
 
-As the codebase grows, the code should be split into "classes" as much as possible, located in their own js files in the `game` folder.
-`Player.js` is one such example.
+As the codebase grows, the code should be split into "classes" as much as possible, located in their own js files in the `game` folder. `Player.js` is one such example.
+
+##### About shared code
+
+Having the same code used by both the server and the client allows to avoid code duplication. One example is the `MovementManager`, which allows to check for collisions using the exact same code on the server and the client. Since the management of dependencies is different in the browser and in Node.js, a variable `onServer` is created in each common file, to check if the file is being loaded on the server or on the client. It can then be used to decide if some modules should be `require`d or `export`ed. 
+
+Within one shared class, there can be methods that will only be used (or *can* only be used) either on the client and the server. Others will have a slightly different behaviour depending on the environment (client or server). The same `onServer` variable is used each time to detect what is the situation, and act accordingly (have a look at the `BlocksManager.addBlock()` method for one such example).
 
 ### App-related code
 
