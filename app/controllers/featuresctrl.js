@@ -3,6 +3,18 @@ app.controller('FeaturesCtrl',[
     function($scope,$http,postWatcher){
 
         $scope.features = [];
+        $scope.sortProperty = {
+            1: 'score',
+            2: 'stamp',
+            3: 'comments.length'
+        };
+        $scope.reverse = { // whether each type of sorting is reversed or not (reverse = descending order)
+            1: true, // by score
+            2: false, // by date
+            3: false // by comments
+        };
+        $scope.sortID = 1;
+        $scope.displayAccepted = true;
 
         $scope.$watch(function(){
             return postWatcher.posted;
@@ -17,6 +29,15 @@ app.controller('FeaturesCtrl',[
                     $scope.features = res.data.map($scope.processFeatures);
                 }
             },function(err){});
+        };
+
+        $scope.changeSort = function(sortID){
+            if($scope.sortID == sortID) $scope.reverse[sortID] = !$scope.reverse[sortID];
+            $scope.sortID = sortID;
+        };
+
+        $scope.testcheck = function(){
+          console.log('check');
         };
 
         $scope.upVote = function(f){
@@ -42,6 +63,7 @@ app.controller('FeaturesCtrl',[
                     if(vote == -1 && previousVote && previousVote != vote) changeUp = -1;
                     f.upvotes += changeUp;
                     f.downvotes += changeDown;
+                    f.score = f.upvotes - f.downvotes;
                 }
             },function(err){});
         };
@@ -52,8 +74,10 @@ app.controller('FeaturesCtrl',[
 
         $scope.processFeatures = function(f){
             // Comments-related preprocessing
+            if(f.comments === undefined) f.comments = [];
             f.showCommentForm = false;
             f.canComment = true;
+            f.score = f.upvotes - f.downvotes;
             $scope.updateArrows(f);
             return f;
         };

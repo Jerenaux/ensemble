@@ -1,9 +1,16 @@
 <h3 class="suggesthead">Suggested features:</h3>
 <span class="fhelp glyphicon glyphicon-question-sign" data-toggle="popover" data-trigger="hover"
                 data-content="Features are ordered by number of votes. Features in green have been implemented. Click on the arrows to vote. You can vote on multiple features, but only once for each. Hover over the arrows to see the number of upvotes and downvotes."></span>
-
-
-<div ng-repeat="f in features | orderBy: '-(upvotes-downvotes)'" ng-class="{'row':true, 'feature':true, 'accepted':f.accepted, 'ongoing':f.ongoing}">
+&nbsp;&nbsp;
+<button title="Sort by votes" ng-click="changeSort(1)" class="btn btn-default" ng-class="{'active':sortID==1}">Votes <span class="glyphicon" ng-class="{' glyphicon-sort-by-attributes':reverse[1] == false,' glyphicon-sort-by-attributes-alt':reverse[1] == true}"></span></button>
+<button title="Sort by date added" ng-click="changeSort(2)" class="btn btn-default" ng-class="{'active':sortID==2}">Date <span class="glyphicon" ng-class="{' glyphicon-sort-by-attributes':reverse[2] == false,' glyphicon-sort-by-attributes-alt':reverse[2] == true}"></span></button>
+<button title="Sort by number of comments" ng-click="changeSort(3)" class="btn btn-default" ng-class="{'active':sortID==3}">Comments <span class="glyphicon" ng-class="{' glyphicon-sort-by-attributes':reverse[3] == false,' glyphicon-sort-by-attributes-alt':reverse[3] == true}"></span></button>
+<br/><label><input type="checkbox" ng-model="displayAccepted"> Display already accepted features</label>
+<!-- f in features | orderBy: '-(upvotes-downvotes)' -->
+<div ng-repeat="f in features | orderBy: sortProperty[sortID]:reverse[sortID]"
+     ng-class="{'row':true, 'feature':true, 'accepted':f.accepted, 'ongoing':f.ongoing}"
+     ng-show="!f.accepted || (f.accepted && displayAccepted)"
+>
     <!-- Voting arrows -->
     <div class="col-xs-1 feature_votes">
         <div ng-click="upVote(f)" title="{{f.upvotes | filterVotes: 'up'}}" ng-class="{'feature_vote_icon':true, 'arrow_up':true, 'on':f.upvoted}"></div>
