@@ -38,8 +38,8 @@ app.controller('FeaturesCtrl',[
                     $scope.updateArrows(f);
                     var changeUp = (vote == 1 ? 1 : 0);
                     var changeDown = (vote == -1 ? 1 : 0);
-                    if(vote == 1 && previousVote != vote) changeDown = -1;
-                    if(vote == -1 && previousVote != vote) changeUp = -1;
+                    if(vote == 1 && previousVote && previousVote != vote) changeDown = -1;
+                    if(vote == -1 && previousVote && previousVote != vote) changeUp = -1;
                     f.upvotes += changeUp;
                     f.downvotes += changeDown;
                 }
