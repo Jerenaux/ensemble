@@ -100,24 +100,29 @@ app.get('/api/features',function(req,res){
 });
 
 //  Whenever someone votes, his IP and the ID of the feature for which the vote was cast are combined, and stored
-//  together with the timestamp of the vote. No vote for the same IP/ID pair is allowed within a certain time interval.
+//  together with the timestamp and the vote. No same vote for the same IP/ID pair is allowed within a certain time interval.
 //  Obviously this is not the strongest defense against multi-vote, but it's good enough at the moment.
 app.voteLog = {};
 
 app.post('/api/vote', function(req, res) {
     var doc = req.body;
-    if(!app.voteAllowed(req.ip,doc.id)){// Check if no vote was cast for the given IP/ID pair in the interval
+    if(doc.vote != 1 && doc.vote != -1){
+        res.status(400).end(); // bad request
+        return;
+    }
+    var vote = app.computeAllowedVote(req.ip,doc.id,doc.vote);
+    if(vote == 0){
         res.status(403).end();
         return;
     }
 
     var action = {};
-    if(doc.change == 1){ // upvote
-        action['$inc'] = {upvotes:1};
-    }else if(doc.change == -1){ // downvote
-        action['$inc'] = {downvotes:1};
+    if(vote >= 1){ // upvote
+        action['$inc'] = {upvotes:1,downvotes:-(vote-1)};
+    }else if(vote <= -1){ // downvote
+        action['$inc'] = {downvotes:1,upvotes:vote+1};
     }else{ // unknwon action
-        res.status(400).end();
+        res.status(400).end(); // bad request
         return;
     }
 
@@ -135,13 +140,27 @@ app.post('/api/vote', function(req, res) {
     );
 });
 
-app.voteAllowed = function(ip,id){
+// Returns the allowed vote (0 for not allowed, +1 or -1 for new up/downvote, +2 or -2 to change an up/downvote to the contrary
+app.computeAllowedVote = function(ip,id,vote){ // vote is +1 or -1
+    var delay = 1000*60*60*2; // 2 hours
     var hash = id+'-'+ip; // simple "hash" that concatenates the feature id with the ip address
-    if(!app.voteLog.hasOwnProperty(hash) || (Date.now() - app.voteLog[hash]) > 1000*60*6*2) {
-        app.voteLog[hash] = Date.now();
-        return true;
+    if(app.voteLog.hasOwnProperty(hash)){
+        var voteData = app.voteLog[hash];
+        if(voteData.vote == vote && (Date.now() - voteData.stamp) < delay) return 0; // can't cast the same vote twice within delay
+        var allowedVote = 0;
+        if(voteData.vote == -1 && vote == 1) allowedVote = 2; // cancel previous -1 and add 1
+        if(voteData.vote == 1 && vote == -1) allowedVote = -2; // cancel previous 1 and add -1
+        voteData.stamp = Date.now();
+        voteData.vote = vote;
+        return allowedVote;
+    }else{
+        voteData = {
+            stamp: Date.now(),
+            vote: vote
+        };
+        app.voteLog[hash] = voteData;
+        return vote;
     }
-    return false;
 };
 
 var multipartyMiddleware = require('connect-multiparty')(); // Needed to access req.body.files

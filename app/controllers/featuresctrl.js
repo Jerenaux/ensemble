@@ -27,21 +27,27 @@ app.controller('FeaturesCtrl',[
             $scope.updateVotes(f,-1);
         };
 
-        $scope.updateVotes = function(f,change){
-            if($scope.hasVoted(f._id)) return;
-            if(f.accepted == true || f.ongoing == true) return;
+        $scope.updateVotes = function(f,vote){
+            if(f.accepted == true || f.ongoing == true) return; // can't vote on accepted features
+            var previousVote = $scope.getVote(f._id);
+            if(vote == previousVote) return; // don't cast the same vote twice
 
-            $http.post("/api/vote/", {id: f._id,change:change}).then(function(res) {
+            $http.post("/api/vote/", {id: f._id,vote:vote}).then(function(res) {
                 if(res.status == 200) {
-                    $scope.registerVote(f._id,change);
+                    $scope.registerVote(f._id,vote);
                     $scope.updateArrows(f);
-                    if(change == 1){
-                        f.upvotes += 1;
-                    }else if(change == -1){
-                        f.downvotes += 1;
-                    }
+                    var changeUp = (vote == 1 ? 1 : 0);
+                    var changeDown = (vote == -1 ? 1 : 0);
+                    if(vote == 1 && previousVote != vote) changeDown = -1;
+                    if(vote == -1 && previousVote != vote) changeUp = -1;
+                    f.upvotes += changeUp;
+                    f.downvotes += changeDown;
                 }
             },function(err){});
+        };
+
+        $scope.hasVoted = function(id){ // check if the client has already voted on a given feature
+            return (localStorage.getItem('vote_'+id) !== null);
         };
 
         $scope.processFeatures = function(f){
@@ -57,16 +63,14 @@ app.controller('FeaturesCtrl',[
             var vote = $scope.getVote(f._id);
             if(vote == 1){
                 f.upvoted = true;
+                f.downvoted = false;
             }else if(vote == -1){
                 f.downvoted = true;
+                f.upvoted = false;
             }
         };
 
-        $scope.hasVoted = function(id){
-            return (localStorage.getItem('vote_'+id) !== null);
-        };
-
-        $scope.getVote = function(id){
+        $scope.getVote = function(id){ // returns the vote that the client has cast for a feature (up = 1, down = -1)
             return localStorage.getItem('vote_'+id);
         };
 
