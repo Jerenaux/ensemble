@@ -76,6 +76,7 @@ app.controller('FeaturesCtrl',[
         };
 
         // Get features
+        $scope.lastVisit = $scope.getPreference('lastVisit',Date.now());
 
         $scope.$watch(function(){ // Watch for the signal that a new feature has been posted, and if yes, refresh features list
             return postWatcher.posted;
@@ -87,6 +88,8 @@ app.controller('FeaturesCtrl',[
             $http.get("/api/features/").then(function(res) {
                 if(res.status == 200){
                     if(postWatcher.posted == true) postWatcher.changeState();
+                    $scope.nbFeatures = 0;
+                    $scope.nbAcceptedFeatures = 0;
                     $scope.features = res.data.map($scope.processFeatures);
                     $scope.managePages();
                 }
@@ -185,6 +188,7 @@ app.controller('FeaturesCtrl',[
         };
 
         $scope.getFeatures();
+        $scope.setPreference('lastVisit',Date.now());
         setInterval($scope.getFeatures,2*60*1000);
     }
 ]);

@@ -37,7 +37,12 @@
     <!-- Body of the suggestion -->
     <div class="col-xs-11 feature_desc">
         <div ng-class="{'panel':true, 'panel-default':true}">
-            <div ng-class="{'panel-heading':true}">{{f.username | formatName}}{{f.stamp | getDelay}} ago <span ng-show="f.accepted" class="accepted-date">| Added {{f.acceptedStamp | getDelay}} ago</span><span ng-show="f.ongoing" class="accepted-date">| Accepted for implementation</span></div>
+            <div ng-class="{'panel-heading':true}">
+                {{f.username | formatName}}{{f.stamp | getDelay}} ago
+                <span class="label label-success" ng-show="f.stamp > lastVisit">NEW</span>
+                <span ng-show="f.accepted" class="accepted-date">| Added {{f.acceptedStamp | getDelay}} ago</span>
+                <span ng-show="f.ongoing" class="accepted-date">| Accepted for implementation</span>
+            </div>
             <div class="panel-body">
                 <!-- Feature description -->
                 {{f.desc}}
