@@ -1,27 +1,50 @@
 app.controller('FeaturesCtrl',[
     '$scope','$http','postWatcher',
     function($scope,$http,postWatcher){
-
         $scope.features = [];
         $scope.nbFeatures = 0;
         $scope.nbAcceptedFeatures = 0;
         // Sorting-related
+
+        // Filter to decide if a feature should be iterated over by ng-repeat (and thus displayed and taken into consideration
+        // by limitTo) or not
+        $scope.checkDisplay = function(f){
+            return (!f.accepted || $scope.displayAccepted);
+        };
+
+        $scope.getPreference = function(parameter,defaultValue){ // Retrieve sorting preferences for localStorage or return a default value
+            var pref = localStorage.getItem(parameter);
+            if(pref === null) return defaultValue;
+            // The following is needed because localStorage stores as text
+            if(pref == 'true') return true;
+            if(pref == 'false') return false;
+            return parseInt(pref);
+        };
+
+        $scope.setPreference = function(parameter,value){
+            localStorage.setItem(parameter,value);
+        };
+
         $scope.sortProperty = {
             1: 'score',
             2: 'stamp',
             3: 'comments.length'
         };
         $scope.reverse = { // whether each type of sorting is reversed or not (reverse = descending order)
-            1: true, // by score
-            2: false, // by date
-            3: false // by comments
+            1: $scope.getPreference('score_reverse',true), // by score
+            2: $scope.getPreference('date_reverse',false), // by date
+            3: $scope.getPreference('comm_reverse',false) // by comments
         };
-        $scope.sortID = 1;
-        $scope.displayAccepted = true;
+        $scope.sortID = $scope.getPreference('sortID',1); // Current sorting method, see sortProperty
+        $scope.displayAccepted =  $scope.getPreference('displayAccepted',true); // display accepted features or not
 
-        $scope.changeSort = function(sortID){
-            if($scope.sortID == sortID) $scope.reverse[sortID] = !$scope.reverse[sortID];
+        $scope.changeSort = function(sortID){ // Change the current sorting methid
+            if($scope.sortID == sortID) $scope.reverse[sortID] = !$scope.reverse[sortID]; // If re-click on the same sorting button, reverse the order
             $scope.sortID = sortID;
+            $scope.setPreference('sortID',$scope.sortID);
+            if(sortID == 1) $scope.setPreference('score_reverse',$scope.reverse[1]);
+            if(sortID == 2) $scope.setPreference('date_reverse',$scope.reverse[2]);
+            if(sortID == 3) $scope.setPreference('comm_reverse',$scope.reverse[3]);
         };
 
         // Pagination-related
@@ -29,14 +52,14 @@ app.controller('FeaturesCtrl',[
         $scope.nbPages = 1;
         $scope.currentPage = 1;
 
-        $scope.makePaginationDummy = function(){
+        $scope.makePaginationDummy = function(){ // Make a dummy list for ng-repeat to iterate over
             $scope.paginationDummy = [];
             for(var i = 0; i < $scope.nbPages; i++){
                 $scope.paginationDummy.push(i);
             }
         };
 
-        $scope.managePages = function(){
+        $scope.managePages = function(){ // Compute the number of pages based on preferences
             var nb = ($scope.displayAccepted ? $scope.nbFeatures : $scope.nbFeatures - $scope.nbAcceptedFeatures);
             $scope.nbPages = ($scope.featuresPerPage > 0 ? Math.ceil(nb/$scope.featuresPerPage) : 1);
             $scope.makePaginationDummy();
@@ -46,14 +69,15 @@ app.controller('FeaturesCtrl',[
             $scope.currentPage = Math.max(1, Math.min(page, $scope.nbPages));
         };
 
-        $scope.updatePages = function(){
+        $scope.updatePages = function(){ // Reacts to the "display accepted features" box being (un)checked
             $scope.managePages();
             if($scope.currentPage > $scope.nbPages) $scope.changePage($scope.nbPages);
+            $scope.setPreference('displayAccepted',$scope.displayAccepted);
         };
 
         // Get features
 
-        $scope.$watch(function(){
+        $scope.$watch(function(){ // Watch for the signal that a new feature has been posted, and if yes, refresh features list
             return postWatcher.posted;
         }, function(newValue){
             if(newValue == true) $scope.getFeatures();

@@ -22,9 +22,11 @@
     </li>
 </ul></div>
 <!-- Features -->
-<div ng-repeat="f in features | orderBy: sortProperty[sortID]:reverse[sortID] | limitTo: featuresPerPage:featuresPerPage*(currentPage-1)"
+<div ng-repeat="f in features |
+    filter: checkDisplay |
+    orderBy: sortProperty[sortID]:reverse[sortID] |
+    limitTo: featuresPerPage:featuresPerPage*(currentPage-1)"
      ng-class="{'row':true, 'feature':true, 'accepted':f.accepted, 'ongoing':f.ongoing}"
-     ng-show="!f.accepted || (f.accepted && displayAccepted)"
 >
     <!-- Voting arrows -->
     <div class="col-xs-1 feature_votes">
