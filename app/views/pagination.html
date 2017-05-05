@@ -1,0 +1,13 @@
+<div class="pagination_div" ng-show="nbPages > 1"><ul class="pagination pagination-sm">
+    <li class="page-item" ng-class="{'disabled':currentPage == 1}">
+        <span aria-hidden="true" ng-click="changePage(currentPage-1)" class="page_btn">&laquo;</span>
+    </li>
+
+    <li ng-repeat="i in paginationDummy" class="page-item" ng-class="{'active':currentPage == ($index+1)}">
+        <span ng-click="changePage($index+1)" class="page_btn">{{$index+1}}</span>
+    </li>
+
+    <li class="page-item" ng-class="{'disabled':currentPage == nbPages}">
+        <span aria-hidden="true" ng-click="changePage(currentPage+1)" class="page_btn">&raquo;</span>
+    </li>
+</ul></div>
