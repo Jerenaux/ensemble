@@ -12,6 +12,15 @@ label {
     font-weight: normal;
 }
 
+.pagination_div {
+    margin-bottom: -20px;
+    margin-top: -20px;
+}
+
+.page_btn {
+    cursor: pointer
+}
+
 canvas {
     cursor: pointer;
     border-radius: 10px;

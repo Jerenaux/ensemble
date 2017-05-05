@@ -20,7 +20,6 @@ app.controller('NewFeatureCtrl',[
                     $scope.description = '';
                     $scope.postForm.$setUntouched();
                     $scope.postForm.$setPristine();
-                    //featuresFactory.dirty = true;
                     postWatcher.changeState();
                     $scope.submitted = true;
                     setTimeout($scope.removeAlert,5000);

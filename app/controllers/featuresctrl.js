@@ -3,6 +3,9 @@ app.controller('FeaturesCtrl',[
     function($scope,$http,postWatcher){
 
         $scope.features = [];
+        $scope.nbFeatures = 0;
+        $scope.nbAcceptedFeatures = 0;
+        // Sorting-related
         $scope.sortProperty = {
             1: 'score',
             2: 'stamp',
@@ -16,6 +19,40 @@ app.controller('FeaturesCtrl',[
         $scope.sortID = 1;
         $scope.displayAccepted = true;
 
+        $scope.changeSort = function(sortID){
+            if($scope.sortID == sortID) $scope.reverse[sortID] = !$scope.reverse[sortID];
+            $scope.sortID = sortID;
+        };
+
+        // Pagination-related
+        $scope.featuresPerPage = 10;
+        $scope.nbPages = 1;
+        $scope.currentPage = 1;
+
+        $scope.makePaginationDummy = function(){
+            $scope.paginationDummy = [];
+            for(var i = 0; i < $scope.nbPages; i++){
+                $scope.paginationDummy.push(i);
+            }
+        };
+
+        $scope.managePages = function(){
+            var nb = ($scope.displayAccepted ? $scope.nbFeatures : $scope.nbFeatures - $scope.nbAcceptedFeatures);
+            $scope.nbPages = ($scope.featuresPerPage > 0 ? Math.ceil(nb/$scope.featuresPerPage) : 1);
+            $scope.makePaginationDummy();
+        };
+
+        $scope.changePage = function(page){
+            $scope.currentPage = Math.max(1, Math.min(page, $scope.nbPages));
+        };
+
+        $scope.updatePages = function(){
+            $scope.managePages();
+            if($scope.currentPage > $scope.nbPages) $scope.changePage($scope.nbPages);
+        };
+
+        // Get features
+
         $scope.$watch(function(){
             return postWatcher.posted;
         }, function(newValue){
@@ -25,20 +62,14 @@ app.controller('FeaturesCtrl',[
         $scope.getFeatures = function(){
             $http.get("/api/features/").then(function(res) {
                 if(res.status == 200){
-                    postWatcher.changeState();
+                    if(postWatcher.posted == true) postWatcher.changeState();
                     $scope.features = res.data.map($scope.processFeatures);
+                    $scope.managePages();
                 }
             },function(err){});
         };
 
-        $scope.changeSort = function(sortID){
-            if($scope.sortID == sortID) $scope.reverse[sortID] = !$scope.reverse[sortID];
-            $scope.sortID = sortID;
-        };
-
-        $scope.testcheck = function(){
-          console.log('check');
-        };
+        // Voting-related
 
         $scope.upVote = function(f){
             $scope.updateVotes(f,1);
@@ -77,8 +108,12 @@ app.controller('FeaturesCtrl',[
             if(f.comments === undefined) f.comments = [];
             f.showCommentForm = false;
             f.canComment = true;
+            // Vote-related
             f.score = f.upvotes - f.downvotes;
             $scope.updateArrows(f);
+            // Pagination-related
+            $scope.nbFeatures++;
+            if(f.accepted) $scope.nbAcceptedFeatures++;
             return f;
         };
 
@@ -101,6 +136,8 @@ app.controller('FeaturesCtrl',[
         $scope.registerVote = function(id,change){
             localStorage.setItem('vote_'+id,change);
         };
+
+        // Comments-related
 
         $scope.postComment = function(feature) {
             if(feature.comment === undefined || feature.comment.length == 0) return;
