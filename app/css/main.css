@@ -79,6 +79,7 @@ canvas {
 
 .accepted .panel-body {
     background: url('/images/accepted.png') no-repeat top right;
+    padding-right: 70px;
 }
 
 .accepted-date{
@@ -91,6 +92,7 @@ canvas {
 
 .ongoing .panel-body {
     background: url('/images/cog.png') no-repeat top right;
+    padding-right: 70px;
 }
 
 .accepted .feature_vote_icon {
