@@ -49,13 +49,12 @@ MovementManager.movePlayer = function(player,x,y){
     });
     player.x = endPosition.x;
     player.y = endPosition.y;
-    //console.log('server end : '+endPosition.x+', '+endPosition.y);
     MovementManager.emitMove(player);
 };
 
 MovementManager.emitMove = function(player){
     if(!onServer) return;
-    io.emit('move',player);
+    io.emit('move',player.getNutshell());
 };
 
 MovementManager.moveAtClick = function(){ // Performs movement following a click

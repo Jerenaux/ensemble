@@ -19,6 +19,15 @@ app.use('/images',express.static(__dirname + '/app/images'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+app.mailTransporter = nodemailer.createTransport({ // transporter used to send e-mails
+    service: 'gmail',
+    auth: {
+        user: process.env.dynetisMailAddress,
+        pass: process.env.dynetisMailPassword
+    },
+    tls: { rejectUnauthorized: false }
+});
+
 app.get('/',function(req,res){
     res.sendFile(__dirname+'/app/index.html');
 });
@@ -53,6 +62,7 @@ app.post('/api/newfeature', function(req, res) {
             throw err;
         }else {
             res.status(201).end();
+
         }
     });
 });
@@ -164,15 +174,6 @@ app.computeAllowedVote = function(ip,id,vote){ // vote is +1 or -1
 };
 
 var multipartyMiddleware = require('connect-multiparty')(); // Needed to access req.body.files
-
-app.mailTransporter = nodemailer.createTransport({ // transporter used to send the artworks by e-mail
-    service: 'gmail',
-    auth: {
-        user: process.env.dynetisMailAddress,
-        pass: process.env.dynetisMailPassword
-    },
-    tls: { rejectUnauthorized: false }
-});
 
 // Handles artwork submissions
 app.post('/api/newart', multipartyMiddleware,function(req,res){

@@ -1,5 +1,4 @@
 var io = require('../../../server.js').io;
-var math = require('mathjs');
 var shared = require('../shared/shared.js').shared;
 
 gameServer = {
@@ -19,10 +18,10 @@ gameServer.initialize = function(){
 
 io.on('connection',function(socket){
     socket.on('newplayer',function(){
-        socket.player = gameServer.generatePlayer(); // Creates a new player object and stores it in the socket
+        socket.player = new Player(); // Creates a new player object and stores it in the socket
         socket.emit('init',gameServer.generateInitPacket(socket.player.id)); // send back an initialization packet
         socket.broadcast.emit('newplayer',{
-            player: socket.player,
+            player: socket.player.getNutshell(),
             nbConnected: gameServer.getNbConnected()
         }); // notify the other players of the arrival of a new player
 
@@ -51,27 +50,9 @@ gameServer.getAllPlayers = function(){ // Iterate over the connected clients to 
     var players = [];
     Object.keys(io.sockets.connected).forEach(function(socketID){
         var player = io.sockets.connected[socketID].player;
-        if(player) players.push(player);
+        if(player) players.push(player.getNutshell());
     });
     return players;
-};
-
-gameServer.generatePlayer = function(){ // Create a new player object
-    var startingPosition = gameServer.getStartingPosition();
-    var cell = shared.computeCellCoordinates(startingPosition.x,startingPosition.y);
-    BlocksManager.makeRoom(cell.x,cell.y); // Ensure the player doesn't start on an occupied cell or surrounded by obstacles
-    return {
-        id: gameServer.lastPlayerID++,
-        x: startingPosition.x,
-        y: startingPosition.y
-    };
-};
-
-gameServer.getStartingPosition = function(){
-    return {
-        x: math.randomInt(gameServer.spriteWidth/2,gameServer.worldWidth-gameServer.spriteWidth),
-        y: math.randomInt(gameServer.spriteHeight/2,gameServer.worldHeight-gameServer.spriteHeight)
-    };
 };
 
 gameServer.generateInitPacket = function(id){ // Generate an object with a few initialization parameters for the client
@@ -93,5 +74,6 @@ gameServer.getNbConnected = function(){
 
 module.exports.gameServer = gameServer;
 
+var Player = require('./Player.js').Player;
 var BlocksManager = require('./../shared/BlocksManager.js').BlocksManager;
 var MovementManager = require('./../shared/MovementManager.js').MovementManager;
