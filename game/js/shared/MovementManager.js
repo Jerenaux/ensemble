@@ -36,7 +36,7 @@ MovementManager.tweenPlayer = function(id,x,y){ // Handles the visual aspects of
 };
 
 // checks the new coordinates received from a client, and update the server-side representation
-MovementManager.movePlayer = function(player,x,y){
+MovementManager.movePlayer = function(player,x,y){ // coordinates in px
     if(!onServer) return;
     var destination = shared.sanitizeCoordinates(x,y); // check if coordinates are within world bounds
     // check for obstacles on the path and return the furthest reachable position

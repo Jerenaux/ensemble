@@ -42,6 +42,7 @@ Game.preload = function() {
     game.load.image('sprite','assets/sprites/sprite.png'); // sprite of own character
     game.load.image('bluesprite','assets/sprites/sprite_blue.png'); // sprite of other players
     game.load.image('block', 'assets/sprites/block.png'); // image for blocks
+    game.load.image('triangle', 'assets/sprites/triangle.png'); // image for triangle
     game.load.spritesheet('9slice', 'assets/sprites/9slicefat.png',10,10); // tilesprite used to make the frame of the welcome panel
     game.load.spritesheet('close', 'assets/sprites/closesprite.png',20,20); // spritesheet for close button
     // Load data from Json files
@@ -63,7 +64,7 @@ Game.create = function(){
     Client.start();
 };
 
-Game.initializeGame = function(ownID,worldW,worldH,cellW,cellH,players,blocks){
+Game.initializeGame = function(ownID,worldW,worldH,cellW,cellH,players,triangles,blocks){
     Game.ownPlayerID = ownID; // numerical id of the player's sprite
     console.log('your ID : '+ownID);
 
@@ -76,6 +77,10 @@ Game.initializeGame = function(ownID,worldW,worldH,cellW,cellH,players,blocks){
 
     for(var i = 0; i < players.length; i++){
         Game.addNewPlayer(players[i].id,players[i].x,players[i].y);
+    }
+
+    for(var i = 0; i < triangles.length; i++){
+        Game.addNewTriangle(triangles[i].id,triangles[i].x,triangles[i].y);
     }
 
     for(var j = 0; j < blocks.length; j++){
@@ -102,6 +107,12 @@ Game.addNewPlayer = function(id,x,y){
         game.camera.follow(Game.ownSprite);
     }
     sprite.anchor.set(0.5); // make the coordinates of the sprite correspond to its center, not to the top left
+    Game.players[id] = sprite;
+};
+
+Game.addNewTriangle = function(id,x,y){
+    var sprite = Game.spritesGroup.add(new Player(x,y,'triangle'));
+    sprite.anchor.set(0.5);
     Game.players[id] = sprite;
 };
 

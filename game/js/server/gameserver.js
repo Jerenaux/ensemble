@@ -8,17 +8,20 @@ gameServer = {
     spriteWidth: 32,//px
     spriteHeight: 32, //px
     cellWidth: 40, // dimensions in px of cells of the grid
-    cellHeight: 40
+    cellHeight: 40,
+    nbTriangles: 5,
+    triangles: []
 };
 
 gameServer.initialize = function(){
     BlocksManager.getBlocksFromDB();
+    gameServer.generateTriangles();
     console.log('Initialized');
 };
 
 io.on('connection',function(socket){
     socket.on('newplayer',function(){
-        socket.player = new Player(); // Creates a new player object and stores it in the socket
+        socket.player = new Player(false); // Creates a new player object and stores it in the socket ; false = not an NPC
         socket.emit('init',gameServer.generateInitPacket(socket.player.id)); // send back an initialization packet
         socket.broadcast.emit('newplayer',{
             player: socket.player.getNutshell(),
@@ -55,6 +58,12 @@ gameServer.getAllPlayers = function(){ // Iterate over the connected clients to 
     return players;
 };
 
+gameServer.getAllTriangles = function(){
+  return gameServer.triangles.map(function(triangle){
+      return triangle.getNutshell();
+  });
+};
+
 gameServer.generateInitPacket = function(id){ // Generate an object with a few initialization parameters for the client
   return {
         worldWidth: gameServer.worldWidth,
@@ -62,6 +71,7 @@ gameServer.generateInitPacket = function(id){ // Generate an object with a few i
         cellWidth: gameServer.cellWidth,
         cellHeight: gameServer.cellHeight,
         players: gameServer.getAllPlayers(),
+        triangles: gameServer.getAllTriangles(),
         blocks: BlocksManager.listBlocks(),
         ownID: id,
         nbConnected: gameServer.getNbConnected()
@@ -71,6 +81,20 @@ gameServer.generateInitPacket = function(id){ // Generate an object with a few i
 gameServer.getNbConnected = function(){
     return Object.keys(io.sockets.connected).length;
 };
+
+gameServer.generateTriangles = function(){
+    for(var i = 0; i < gameServer.nbTriangles; i++){
+        gameServer.triangles.push(new Player(true)); //Triangles handled using the same class as Players at the moment ; true = NPC
+    }
+};
+
+/*gameServer.moveTriangles = function(){
+  for(var i = 0; i < gameServer.triangles.length; i++){
+      var triangle = gameServer.triangles[i];
+      var destination = triangle.getRandomCoordinates(200,200);
+      MovementManager.movePlayer(triangle,destination.x,destination.y);
+  }
+};*/
 
 module.exports.gameServer = gameServer;
 

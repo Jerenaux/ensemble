@@ -47,7 +47,10 @@ Client.emptyQueue = function(){ // Process the events that have been queued duri
 };
 
 Client.socket.on('init',function(data){ // the client receives the data to initialize the game
-    Game.initializeGame(data.ownID,data.worldWidth,data.worldHeight,data.cellWidth,data.cellHeight,data.players,data.blocks);
+    Game.initializeGame(
+        data.ownID,data.worldWidth,data.worldHeight,data.cellWidth,data.cellHeight,
+        data.players,data.triangles,data.blocks
+    );
     Game.updateNbConnected(data.nbConnected);
 });
 
