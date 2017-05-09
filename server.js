@@ -103,6 +103,7 @@ app.get('/api/features',function(req,res){
             if(docs.length == 0){
                 res.status(204).end();
             }else {
+                res.setHeader('Content-Type', 'application/json');
                 res.status(200).send(docs).end();
             }
         }
