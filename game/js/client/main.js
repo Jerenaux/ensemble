@@ -4,16 +4,9 @@ var game = new Phaser.Game(750,400, Phaser.AUTO, document.getElementById('game')
 game.state.add('Game',Game);
 game.state.start('Game');
 
-function manageFormFocus(){
-    //console.log($('input[type=text], textarea').length+' matching elements');
+function manageFocus(){
+    console.log($('input[type=text], textarea').length+' loaded elements');
     $('input[type=text], textarea').focus(function(){Game.toggleGameControls(false);});
     $('input[type=text], textarea').blur(function(){Game.toggleGameControls(true);});
+    $('[data-toggle="popover"]').popover();
 }
-
-$(document).ready(function()
-{
-    setTimeout(function(){
-        $('[data-toggle="popover"]').popover();
-        manageFormFocus();
-    },2000);
-});

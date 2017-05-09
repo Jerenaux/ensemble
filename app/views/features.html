@@ -15,6 +15,7 @@
     orderBy: sortProperty[sortID]:reverse[sortID] |
     limitTo: featuresPerPage:featuresPerPage*(currentPage-1)"
      ng-class="{'row':true, 'feature':true, 'accepted':f.accepted, 'ongoing':f.ongoing}"
+     on-finish-render
 >
     <!-- Voting arrows -->
     <div class="col-xs-1 feature_votes">

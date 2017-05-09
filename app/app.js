@@ -41,3 +41,9 @@ app.factory('postWatcher',function(){
         }
     }
 });
+
+app.directive('onFinishRender', function() {
+    return function(scope){
+        if(scope.$last) manageFocus();
+    };
+});
