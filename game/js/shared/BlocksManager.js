@@ -88,8 +88,7 @@ BlocksManager.insertBlockIntoDB = function(x,y){
     if(!onServer) return;
     var blockDoc = {
         x: x,
-        y: y,
-        value: BlocksManager.blockValue //  x,y,value format used by SpaceMap to (de)serialize to/from lists
+        y: y
     };
     server.db.collection('blocks').insertOne(blockDoc,function(err){if(err) throw err;});
 };
@@ -121,6 +120,14 @@ BlocksManager.emitRemoval = function(x,y){
 // returns true if there is a block on the given cell
 BlocksManager.isBlockAt = function(x,y){  // x and y in cell coordinates, not px
     return (BlocksManager.blocks.get(x,y) !== null); // a SpaceMap returns null when nothing found at given coordinates
+};
+
+// Returns true if there is at least one block on one of the cells of the provided list
+BlocksManager.isBlockAtList = function(list){  // list of cells to check
+    for(var i = 0; i < list.length; i++){
+        if(BlocksManager.isBlockAt(list[i].x,list[i].y)) return true;
+    }
+    return false;
 };
 
 if(onServer) module.exports.BlocksManager = BlocksManager;

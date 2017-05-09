@@ -35,28 +35,6 @@ MovementManager.tweenPlayer = function(id,x,y){ // Handles the visual aspects of
     player.tween.start();
 };
 
-// checks the new coordinates received from a client, and update the server-side representation
-MovementManager.movePlayer = function(player,x,y){ // coordinates in px
-    if(!onServer) return;
-    var destination = shared.sanitizeCoordinates(x,y); // check if coordinates are within world bounds
-    // check for obstacles on the path and return the furthest reachable position
-    var endPosition = MovementManager.checkObstacles({
-        x:player.x, // start
-        y:player.y
-    }, {
-        x: destination.x, // end
-        y: destination.y
-    });
-    player.x = endPosition.x;
-    player.y = endPosition.y;
-    MovementManager.emitMove(player);
-};
-
-MovementManager.emitMove = function(player){
-    if(!onServer) return;
-    io.emit('move',player.getNutshell());
-};
-
 MovementManager.moveAtClick = function(){ // Performs movement following a click
     if(onServer) return;
     if(!Game.allowAction) return;
@@ -97,31 +75,52 @@ MovementManager.moveByKeys = function(angle){
     Client.sendMovement(endPosition.x,endPosition.y);
 };
 
+// checks the new coordinates received from a client, and update the server-side representation
+MovementManager.movePlayer = function(player,x,y){ // coordinates in px
+    if(!onServer) return;
+    var destination = shared.sanitizeCoordinates(x,y); // check if coordinates are within world bounds
+    // check for obstacles on the path and return the furthest reachable position
+    var endPosition = MovementManager.checkObstacles({
+        x:player.x, // start
+        y:player.y
+    }, {
+        x: destination.x, // end
+        y: destination.y
+    });
+    player.x = endPosition.x;
+    player.y = endPosition.y;
+    MovementManager.emitMove(player);
+};
+
 MovementManager.checkObstacles = function(start,end){ // coordinates in px
     // Coarse algorithm to check if an obstacle is on the trajectory (straight line from start to end coordinates).
     // It does so by splitting the path in chunks of 20 pixels, and check if the corresponding cell has a block or not.
     // If yes, returns the end coordinates in case of "hitting" the obstacle; if no, return the intended end coordinates.
-    var chunkLength = 20; // The smaller, the more precise the algorithm, but 20 seems to do a good job (for a cell size of 40)
+    var chunkLength = 20; // The smaller, the more precise the algorithm
     var startCell = shared.computeCellCoordinates(start.x,start.y);
     var speed = MovementManager.computeSpeed(MovementManager.computeAngle(start,end));
     var distance = MovementManager.euclideanDistance(start,end);
     // Split the path in chunks
-    var nbChunks = Math.round(distance/chunkLength);
+    var nbChunks = Math.ceil(distance/chunkLength);
     var tmp = {
         x: start.x,
         y: start.y
     };
+    var previousCell = {};
     for(var i = 0; i < nbChunks; i++){
         tmp.x += speed.x*chunkLength;
         tmp.y += speed.y*chunkLength;
         var cell = shared.computeCellCoordinates(tmp.x,tmp.y);
         if(cell.x == startCell.x && cell.y == startCell.y) continue; // ignore obstacles on starting cell
-        if(BlocksManager.isBlockAt(cell.x,cell.y)) { // If obstacle, step back and return
+        if(cell.x == previousCell.x && cell.y == previousCell.y) continue;
+        if(BlocksManager.isBlockAt(cell.x,cell.y) || MovementManager.isOutOfBounds(cell.x,cell.y)) { // If obstacle, step back and return
             return {
                 x: tmp.x - speed.x*chunkLength,
                 y: tmp.y - speed.y*chunkLength
             }
         }
+        previousCell.x = cell.x;
+        previousCell.y = cell.y;
     }
     // No obstacle found, return intended end coordinates
     return end;
@@ -140,6 +139,15 @@ MovementManager.computeSpeed = function(angle){ // return unit speed vector give
 
 MovementManager.euclideanDistance = function(a,b){ // return Euclidean distance between points a and b
     return Math.sqrt(Math.pow(a.x- b.x,2)+Math.pow(a.y- b.y,2));
+};
+
+MovementManager.isOutOfBounds = function(x,y) { // cell coordinates
+    return (x < 0 || y < 0 || x > 57 || y > 30);
+};
+
+MovementManager.emitMove = function(player){
+    if(!onServer) return;
+    io.emit('move',player.getNutshell());
 };
 
 if(onServer) module.exports.MovementManager = MovementManager;
