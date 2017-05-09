@@ -12,7 +12,13 @@ if(onServer) {
 // Object responsible for handling the movements of all players (checking for obstacles, broadcasting ...), be it by click or key press
 MovementManager = {
     lastMove : 0, // timestamp of the last time the player moved (client-side use only)
-    moveDelay: 100 //ms before allowing a new movement (client-side use only)
+    moveDelay: 100, //ms before allowing a new movement (client-side use only)
+    /*worldWidth: gameServer.worldWidth, //px
+    worldHeight: gameServer.worldHeight, //px
+    spriteWidth: gameServer.spriteWidth,//px
+    spriteHeight: gameServer.spriteHeight, //px
+    cellWidth: gameServer.cellWidth, // dimensions in px of cells of the grid
+    cellHeight: gameServer.cellHeight*/
 };
 
 MovementManager.canMoveAgain = function(){ // check if enough time has elapsed to allow a new movement, to prevent rapid firing
@@ -113,7 +119,7 @@ MovementManager.checkObstacles = function(start,end){ // coordinates in px
         var cell = shared.computeCellCoordinates(tmp.x,tmp.y);
         if(cell.x == startCell.x && cell.y == startCell.y) continue; // ignore obstacles on starting cell
         if(cell.x == previousCell.x && cell.y == previousCell.y) continue;
-        if(BlocksManager.isBlockAt(cell.x,cell.y) || MovementManager.isOutOfBounds(cell.x,cell.y)) { // If obstacle, step back and return
+        if(BlocksManager.isBlockAt(cell.x,cell.y) || shared.isOutOfBounds(cell.x,cell.y)) { // If obstacle, step back and return
             return {
                 x: tmp.x - speed.x*chunkLength,
                 y: tmp.y - speed.y*chunkLength
@@ -139,10 +145,6 @@ MovementManager.computeSpeed = function(angle){ // return unit speed vector give
 
 MovementManager.euclideanDistance = function(a,b){ // return Euclidean distance between points a and b
     return Math.sqrt(Math.pow(a.x- b.x,2)+Math.pow(a.y- b.y,2));
-};
-
-MovementManager.isOutOfBounds = function(x,y) { // cell coordinates
-    return (x < 0 || y < 0 || x > 57 || y > 30);
 };
 
 MovementManager.emitMove = function(player){

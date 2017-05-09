@@ -1,9 +1,8 @@
 var io = require('../../../server.js').io;
-var shared = require('../shared/shared.js').shared;
 
 gameServer = {
     lastPlayerID : 0,
-    worldWidth: 2250, //px
+    worldWidth: 2240, //px
     worldHeight: 1200, //px
     spriteWidth: 32,//px
     spriteHeight: 32, //px
@@ -90,6 +89,7 @@ gameServer.generateTriangles = function(){
 
 module.exports.gameServer = gameServer;
 
+var shared = require('../shared/shared.js').shared;
 var Player = require('./Player.js').Player;
 var BlocksManager = require('./../shared/BlocksManager.js').BlocksManager;
 var MovementManager = require('./../shared/MovementManager.js').MovementManager;

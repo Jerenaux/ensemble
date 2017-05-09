@@ -4,6 +4,10 @@
 
 var onServer = (typeof window === 'undefined');
 
+if(onServer){
+    var gameServer = require('../server/gameserver.js').gameServer;
+}
+
 var shared = {};
 
 shared.computeCellCoordinates = function(x,y){ // return the coordinates of the cell corresponding of a pair of raw coordinates
@@ -13,6 +17,14 @@ shared.computeCellCoordinates = function(x,y){ // return the coordinates of the 
         x: Math.floor(x/cellWidth),
         y: Math.floor(y/cellHeight)
     };
+};
+
+shared.isOutOfBounds = function(x,y) { // cell coordinates
+    var worldWidth = (onServer ? gameServer.worldWidth : game.world.width);
+    var worldHeight = (onServer ? gameServer.worldHeight : game.world.height);
+    var cellWidth = (onServer ? gameServer.cellWidth : Game.cellWidth);
+    var cellHeight = (onServer ? gameServer.cellHeight : Game.cellHeight);
+    return (x < 0 || y < 0 || x > (worldWidth/cellWidth) || y > (worldHeight/cellHeight));
 };
 
 shared.sanitizeCoordinates = function(x,y){ // ensure that a pair of coordinates is not out of bounds ; coordinates in px
