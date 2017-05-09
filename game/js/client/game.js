@@ -129,6 +129,8 @@ Game.registerControls = function(){
     Game.bg.events.onInputDown.add(MovementManager.moveAtClick,this);
     // register the enter key to drop blocks
     game.input.keyboard.addKey(Phaser.Keyboard.ENTER).onDown.add(BlocksManager.dropBlock, this);
+    game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR).onDown.add(BlocksManager.dropBlock, this);
+    game.input.keyboard.addKeyCapture(Phaser.Keyboard.SPACEBAR); // prevent scrolling
     // register the arrows (the associated logic takes place Game.update())
     Game.arrows = game.input.keyboard.createCursorKeys();
     // register WASD key (regardless of actual keyboard layout) (the associated logic takes place Game.update())
@@ -138,7 +140,6 @@ Game.registerControls = function(){
         left: game.input.keyboard.addKey(Phaser.Keyboard.A),
         right: game.input.keyboard.addKey(Phaser.Keyboard.D)
     };
-    // Note: if you register the spacebar at some point, don't forget to use addKeyCapture(), but this will conflict with typing in the submission forms!
 };
 
 // enable/disable key captures when the submission forms of the app (comments, features) lose/gain focus

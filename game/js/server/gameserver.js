@@ -88,14 +88,6 @@ gameServer.generateTriangles = function(){
     }
 };
 
-/*gameServer.moveTriangles = function(){
-  for(var i = 0; i < gameServer.triangles.length; i++){
-      var triangle = gameServer.triangles[i];
-      var destination = triangle.getRandomCoordinates(200,200);
-      MovementManager.movePlayer(triangle,destination.x,destination.y);
-  }
-};*/
-
 module.exports.gameServer = gameServer;
 
 var Player = require('./Player.js').Player;
