@@ -5,7 +5,7 @@ game.state.add('Game',Game);
 game.state.start('Game');
 
 function manageFocus(){
-    console.log($('input[type=text], textarea').length+' loaded elements');
+    //console.log($('input[type=text], textarea').length+' loaded elements');
     $('input[type=text], textarea').focus(function(){Game.toggleGameControls(false);});
     $('input[type=text], textarea').blur(function(){Game.toggleGameControls(true);});
     $('[data-toggle="popover"]').popover();

@@ -36,7 +36,7 @@ BlocksManager.addBlock = function(x,y){ // return true for success, false otherw
         BlocksManager.insertBlockIntoDB(x, y);
         BlocksManager.emitBlock(x, y);
     }else{
-        block = Game.blocksGroup.add(new Block(x*Game.cellWidth,y*Game.cellHeight));
+        block = Game.blocksGroup.add(new Block(x*shared.config.cellWidth,y*shared.config.cellHeight));
     }
     BlocksManager.insertBlockIntoSpaceMap(x,y,block);
 };

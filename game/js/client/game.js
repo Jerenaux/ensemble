@@ -10,9 +10,6 @@
 * For the moment, Ensemble only needs one main game state. The states are declared in game/js/client/main.js.
 * */
 var Game = {
-    spriteSpeed : 1, // "speed" at which the player sprites will travel, in msec/px
-    cellWidth: null, // dimensions of the cells of the grid (received from server and set in Game.initializeGame())
-    cellHeight: null,
     ownPlayerID: -1, // identifier of the sprite of the player (the green one)
     ownSprite: null, // reference to the sprite of the player (the green one)
     initialized: false,
@@ -47,11 +44,13 @@ Game.preload = function() {
     game.load.spritesheet('close', 'assets/sprites/closesprite.png',20,20); // spritesheet for close button
     // Load data from Json files
     game.load.json('texts', 'assets/json/texts.json'); // All the texts appearing in the game (such as help, ...)
+    game.load.json('config', 'assets/json/config.json'); // Configuration parameters
 };
 
 Game.create = function(){
     Game.players = {}; // list of Player objects, accessed by id
     Game.texts = game.cache.getJSON('texts'); // Fetches the data from the loaded json file
+    shared.config = game.cache.getJSON('config');
 
     // The next few lines create a few groups in which the different sprites of the game will be stored.
     // The order of the groups is important, as it determines the rendering order: if a group B is created
@@ -64,16 +63,14 @@ Game.create = function(){
     Client.start();
 };
 
-Game.initializeGame = function(ownID,worldW,worldH,cellW,cellH,players,triangles,blocks){
+Game.initializeGame = function(ownID,players,triangles,blocks){
     Game.ownPlayerID = ownID; // numerical id of the player's sprite
     console.log('your ID : '+ownID);
 
-    Game.cellWidth = cellW;
-    Game.cellHeight = cellH;
-    game.world.bounds.setTo(0, 0, worldW, worldH); // set the dimensions of the game world to those received from the server
-    game.camera.bounds = new Phaser.Rectangle(0,0,worldW,worldH); // set the limits in which the camera can move
+    game.world.bounds.setTo(0, 0, shared.config.worldWidth, shared.config.worldHeight); // set the dimensions of the game world to those received from the server
+    game.camera.bounds = new Phaser.Rectangle(0,0,shared.config.worldWidth,shared.config.worldHeight); // set the limits in which the camera can move
 
-    Game.createBackground(worldW,worldH);
+    Game.createBackground(shared.config.worldWidth,shared.config.worldHeight);
 
     for(var i = 0; i < players.length; i++){
         Game.addNewPlayer(players[i].id,players[i].x,players[i].y);

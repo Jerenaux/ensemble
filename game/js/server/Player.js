@@ -24,8 +24,8 @@ function Player(npc){
 
 Player.prototype.getStartingPosition = function(){
     return {
-        x: math.randomInt(0,gameServer.worldWidth),
-        y: math.randomInt(0,gameServer.worldHeight)
+        x: math.randomInt(0,shared.config.worldWidth),
+        y: math.randomInt(0,shared.config.worldHeight)
     };
 };
 

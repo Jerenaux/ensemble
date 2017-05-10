@@ -5,34 +5,37 @@
 var onServer = (typeof window === 'undefined');
 
 if(onServer){
-    var gameServer = require('../server/gameserver.js').gameServer;
+    var fs = require('fs');
+    var path = require('path');
 }
 
-var shared = {};
+var shared = {
+    config : {} // stores parameters for the game
+};
+
+shared.readConfigFile = function(){
+    if(!onServer) return;
+    // Read config file
+    var config = JSON.parse(fs.readFileSync(path.join(__dirname,'..','..','assets','json','config.json')).toString());
+    Object.assign(shared.config,config);
+    console.log('Config file read');
+};
 
 shared.computeCellCoordinates = function(x,y){ // return the coordinates of the cell corresponding of a pair of raw coordinates
-    var cellWidth = (onServer ? gameServer.cellWidth : Game.cellWidth);
-    var cellHeight = (onServer ? gameServer.cellHeight : Game.cellHeight);
     return {
-        x: Math.floor(x/cellWidth),
-        y: Math.floor(y/cellHeight)
+        x: Math.floor(x/shared.config.cellWidth),
+        y: Math.floor(y/shared.config.cellHeight)
     };
 };
 
 shared.isOutOfBounds = function(x,y) { // cell coordinates
-    var worldWidth = (onServer ? gameServer.worldWidth : game.world.width);
-    var worldHeight = (onServer ? gameServer.worldHeight : game.world.height);
-    var cellWidth = (onServer ? gameServer.cellWidth : Game.cellWidth);
-    var cellHeight = (onServer ? gameServer.cellHeight : Game.cellHeight);
-    return (x < 0 || y < 0 || x > (worldWidth/cellWidth) || y > (worldHeight/cellHeight));
+    return (x < 0 || y < 0 || x > (shared.config.worldWidth/shared.config.cellWidth) || y > (shared.config.worldWidth/shared.config.cellHeight));
 };
 
 shared.sanitizeCoordinates = function(x,y){ // ensure that a pair of coordinates is not out of bounds ; coordinates in px
-    var worldWidth = (onServer ? gameServer.worldWidth : game.world.width);
-    var worldHeight = (onServer ? gameServer.worldHeight : game.world.height);
     return {
-        x: shared.clamp(x,0,worldWidth),
-        y: shared.clamp(y,0,worldHeight)
+        x: shared.clamp(x,0,shared.config.worldWidth),
+        y: shared.clamp(y,0,shared.config.worldHeight)
     };
 };
 

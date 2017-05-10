@@ -1,19 +1,17 @@
 var io = require('../../../server.js').io;
+var shared = require('../shared/shared.js').shared;
 
 gameServer = {
     lastPlayerID : 0,
-    worldWidth: 2240, //px
-    worldHeight: 1200, //px
-    spriteWidth: 32,//px
-    spriteHeight: 32, //px
-    cellWidth: 40, // dimensions in px of cells of the grid
-    cellHeight: 40,
-    nbTriangles: 5,
-    triangles: []
+    triangles: [] // List of the triangle NPC
 };
 
 gameServer.initialize = function(){
+    // Load config file
+    shared.readConfigFile();
+    // Load blocks
     BlocksManager.getBlocksFromDB();
+    // Create NPC
     gameServer.generateTriangles();
     console.log('Initialized');
 };
@@ -65,10 +63,6 @@ gameServer.getAllTriangles = function(){
 
 gameServer.generateInitPacket = function(id){ // Generate an object with a few initialization parameters for the client
   return {
-        worldWidth: gameServer.worldWidth,
-        worldHeight: gameServer.worldHeight,
-        cellWidth: gameServer.cellWidth,
-        cellHeight: gameServer.cellHeight,
         players: gameServer.getAllPlayers(),
         triangles: gameServer.getAllTriangles(),
         blocks: BlocksManager.listBlocks(),
@@ -82,14 +76,13 @@ gameServer.getNbConnected = function(){
 };
 
 gameServer.generateTriangles = function(){
-    for(var i = 0; i < gameServer.nbTriangles; i++){
+    for(var i = 0; i < shared.config.nbTriangles; i++){
         gameServer.triangles.push(new Player(true)); //Triangles handled using the same class as Players at the moment ; true = NPC
     }
 };
 
 module.exports.gameServer = gameServer;
 
-var shared = require('../shared/shared.js').shared;
 var Player = require('./Player.js').Player;
 var BlocksManager = require('./../shared/BlocksManager.js').BlocksManager;
 var MovementManager = require('./../shared/MovementManager.js').MovementManager;

@@ -1,0 +1,11 @@
+{
+  "worldWidth": 2240,
+  "worldHeight": 1200,
+  "spriteWidth": 32,
+  "spriteHeight": 32,
+  "cellWidth": 40,
+  "cellHeight": 40,
+  "nbTriangles": 15,
+  "spriteSpeed": 1,
+  "moveDelay": 100
+}

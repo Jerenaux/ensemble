@@ -11,19 +11,12 @@ if(onServer) {
 
 // Object responsible for handling the movements of all players (checking for obstacles, broadcasting ...), be it by click or key press
 MovementManager = {
-    lastMove : 0, // timestamp of the last time the player moved (client-side use only)
-    moveDelay: 100, //ms before allowing a new movement (client-side use only)
-    /*worldWidth: gameServer.worldWidth, //px
-    worldHeight: gameServer.worldHeight, //px
-    spriteWidth: gameServer.spriteWidth,//px
-    spriteHeight: gameServer.spriteHeight, //px
-    cellWidth: gameServer.cellWidth, // dimensions in px of cells of the grid
-    cellHeight: gameServer.cellHeight*/
+    lastMove : 0 // timestamp of the last time the player moved (client-side use only)
 };
 
 MovementManager.canMoveAgain = function(){ // check if enough time has elapsed to allow a new movement, to prevent rapid firing
     if(onServer) return;
-    if(Date.now() - MovementManager.lastMove < MovementManager.moveDelay) return false;
+    if(Date.now() - MovementManager.lastMove < shared.config.moveDelay) return false;
     MovementManager.lastMove = Date.now();
     return true;
 };
@@ -36,7 +29,7 @@ MovementManager.tweenPlayer = function(id,x,y){ // Handles the visual aspects of
     var distance = Phaser.Math.distance(player.x,player.y,x,y);
     // The following tweens a sprite linearly from its current position to the received (x,y) coordinates
     player.tween = game.add.tween(player);
-    var duration = distance*Game.spriteSpeed;
+    var duration = distance/shared.config.spriteSpeed;
     player.tween.to({x:x,y:y}, duration,Phaser.Easing.Linear.None);
     player.tween.start();
 };
@@ -71,8 +64,8 @@ MovementManager.moveByKeys = function(angle){
         y: Game.ownSprite.position.y
     };
     var end = {
-        x : Game.ownSprite.position.x + Math.cos(angle)*Game.cellWidth,
-        y : Game.ownSprite.position.y + -Math.sin(angle)*Game.cellHeight
+        x : Game.ownSprite.position.x + Math.cos(angle)*shared.config.cellWidth,
+        y : Game.ownSprite.position.y + -Math.sin(angle)*shared.config.cellHeight
     };
     end = shared.sanitizeCoordinates(end.x,end.y);
     var endPosition = MovementManager.checkObstacles(start,end);
