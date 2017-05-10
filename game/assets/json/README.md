@@ -11,7 +11,7 @@ this `README` file will be used to list information about each entry of `config.
 `moveDelay`:       the minimum amount of time, in milliseconds, that should elapse between two movement instructions of a player.  
 `chunkLength`:     length of the "chunks" used to decompose the trajectory of moving sprites for the collision detection algorithm (see `MovementManager.checkObstacles()`)  
 `nbTriangles`:     number of triangle NPC in the game.    
-`randomWalkWidth`  width of the area within which the NPC will randomly move, in pixels.  
-`randomWalkHeight` height of the area within which the NPC will randomly move, in pixels.  
-`minWalkDelay`     minimum amount of time, in milliseconds, before a NPC performs a new random walk. 
-`maxWalkDelay`     maximum amount of time, in milliseconds, before a NPC performs a new random walk.
+`randomWalkWidth`:  width of the area within which the NPC will randomly move, in pixels.  
+`randomWalkHeight`: height of the area within which the NPC will randomly move, in pixels.  
+`minWalkDelay`:     minimum amount of time, in milliseconds, before a NPC performs a new random walk. 
+`maxWalkDelay`:     maximum amount of time, in milliseconds, before a NPC performs a new random walk.
