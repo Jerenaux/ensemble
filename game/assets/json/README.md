@@ -13,5 +13,5 @@ this `README` file will be used to list information about each entry of `config.
 `nbTriangles`:     number of triangle NPC in the game.    
 `randomWalkWidth`:  width of the area within which the NPC will randomly move, in pixels.  
 `randomWalkHeight`: height of the area within which the NPC will randomly move, in pixels.  
-`minWalkDelay`:     minimum amount of time, in milliseconds, before a NPC performs a new random walk. 
+`minWalkDelay`:     minimum amount of time, in milliseconds, before a NPC performs a new random walk.   
 `maxWalkDelay`:     maximum amount of time, in milliseconds, before a NPC performs a new random walk.
