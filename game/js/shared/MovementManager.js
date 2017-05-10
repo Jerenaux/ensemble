@@ -5,6 +5,7 @@ var onServer = (typeof window === 'undefined');
 
 if(onServer) {
     var io = require('../../../server.js').io; // socket.io object
+    var math = require('mathjs');
     var shared = require('./shared.js').shared;
     var BlocksManager = require('./BlocksManager.js').BlocksManager;
 }
@@ -95,7 +96,7 @@ MovementManager.checkObstacles = function(start,end){ // coordinates in px
     // Coarse algorithm to check if an obstacle is on the trajectory (straight line from start to end coordinates).
     // It does so by splitting the path in chunks of 20 pixels, and check if the corresponding cell has a block or not.
     // If yes, returns the end coordinates in case of "hitting" the obstacle; if no, return the intended end coordinates.
-    var chunkLength = 20; // The smaller, the more precise the algorithm
+    var chunkLength = shared.config.chunkLength; // The smaller, the more precise the algorithm
     var startCell = shared.computeCellCoordinates(start.x,start.y);
     var speed = MovementManager.computeSpeed(MovementManager.computeAngle(start,end));
     var distance = MovementManager.euclideanDistance(start,end);
@@ -139,6 +140,23 @@ MovementManager.computeSpeed = function(angle){ // return unit speed vector give
 MovementManager.euclideanDistance = function(a,b){ // return Euclidean distance between points a and b
     return Math.sqrt(Math.pow(a.x- b.x,2)+Math.pow(a.y- b.y,2));
 };
+
+// Goes to random coordinates and repeat after a random delay
+MovementManager.randomWalk = function(player){
+    var destination = MovementManager.getRandomCoordinates(player,shared.config.randomWalkWidth,shared.config.randomWalkHeight);
+    MovementManager.movePlayer(player,destination.x,destination.y);
+    var delay = math.randomInt(shared.config.minWalkDelay,shared.config.maxWalkDelay);
+    setTimeout(MovementManager.randomWalk,delay,player);
+};
+
+// Returns a pair of random coordinates restricted to the neighborhood of the player (defined by maxWidth and maxHeight)
+MovementManager.getRandomCoordinates = function(player,maxWidth,maxHeight){ // dimensions in the area in which to generate random coordinates
+    return {
+        x: player.x + Math.round(math.random(-1,1)*maxWidth),
+        y: player.y + Math.round(math.random(-1,1)*maxHeight)
+    };
+};
+
 
 MovementManager.emitMove = function(player){
     if(!onServer) return;

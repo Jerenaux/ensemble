@@ -8,7 +8,6 @@ var math = require('mathjs');
 var gameServer = require('./gameserver.js').gameServer;
 var shared = require('../shared/shared.js').shared;
 var BlocksManager = require('../shared/BlocksManager.js').BlocksManager;
-var MovementManager = require('../shared/MovementManager.js').MovementManager;
 
 function Player(npc){
     var startingPosition = this.getStartingPosition();
@@ -19,7 +18,6 @@ function Player(npc){
     this.id = gameServer.lastPlayerID++;
     this.x = startingPosition.x;
     this.y = startingPosition.y;
-    if(npc) this.randomWalk();
 }
 
 Player.prototype.getStartingPosition = function(){
@@ -28,23 +26,6 @@ Player.prototype.getStartingPosition = function(){
         y: math.randomInt(0,shared.config.worldHeight)
     };
 };
-
-// Goes to random coordinates and repeat after a random delay
-Player.prototype.randomWalk = function(){
-    var destination = this.getRandomCoordinates(200,200);
-    MovementManager.movePlayer(this,destination.x,destination.y);
-    var delay = math.randomInt(500,2500);
-    setTimeout(this.randomWalk.bind(this),delay);
-};
-
-// Returns a pair of random coordinates restricted to the neighborhood of the player (defined by maxWidth and maxHeight)
-Player.prototype.getRandomCoordinates = function(maxWidth,maxHeight){ // dimensions in the area in which to generate random coordinates
-    return {
-        x: this.x + Math.round(math.random(-1,1)*maxWidth),
-        y: this.y + Math.round(math.random(-1,1)*maxHeight)
-    };
-};
-
 
 // Returns a bare-bones object (a 'nutshell') for sending over the network, containing only the fields that may be needed for the clients
 Player.prototype.getNutshell = function(){

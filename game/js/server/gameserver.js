@@ -77,7 +77,9 @@ gameServer.getNbConnected = function(){
 
 gameServer.generateTriangles = function(){
     for(var i = 0; i < shared.config.nbTriangles; i++){
-        gameServer.triangles.push(new Player(true)); //Triangles handled using the same class as Players at the moment ; true = NPC
+        var triangle = new Player(true); //Triangles handled using the same class as Players at the moment ; true = NPC
+        gameServer.triangles.push(triangle);
+        MovementManager.randomWalk(triangle);
     }
 };
 

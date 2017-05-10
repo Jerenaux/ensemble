@@ -5,7 +5,12 @@
   "spriteHeight": 32,
   "cellWidth": 40,
   "cellHeight": 40,
-  "nbTriangles": 15,
   "spriteSpeed": 1,
-  "moveDelay": 100
+  "moveDelay": 100,
+  "chunkLength": 20,
+  "nbTriangles": 5,
+  "randomWalkWidth": 200,
+  "randomWalkHeight": 200,
+  "minWalkDelay": 500,
+  "maxWalkDelay": 2500
 }
